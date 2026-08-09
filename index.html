@@ -4,13 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="Eo-Pl7oJFDLLMu_5jAPJCJL6spxdR-7pS3lCJSYt924" />
-  <title>原神ガチャリソース計算機 Pro | 凸数・天井・確率シミュレーター</title>
+  <title>【原神】ガチャ確率・必要原石計算機｜ソフト天井・命定値対応シミュレーター</title>
   <meta name="description" content="原神の現在所持リソース（原石・スターライト・ガチャ石）と将来の獲得予定から、目標凸数（C0〜C6）や武器の獲得確率をモンテカルロシミュレーションで算出するツールです。">
   <meta property="og:title" content="原神ガチャリソース計算機 Pro">
   <meta property="og:description" content="原石・ガチャ石の将来計算と目標凸数の獲得確率を簡単シミュレート！">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://32salut-png.github.io/genshin-calc/">
   <link rel="sitemap" type="application/xml" href="/genshin-calc/sitemap.xml">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "原神ガチャ計算機",
+    "url": "https://32salut-png.github.io/genshin-calc/",
+    "operatingSystem": "All",
+    "applicationCategory": "GameApplication",
+    "description": "原神のガチャ確率や目標達成に必要な原石数をモンテカルロシミュレーションで精密計算するツール。ソフト天井・命定値・バージョン配布原石に対応。"
+  }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -1177,6 +1188,32 @@ loadSettings();
 updateInventory();
 </script>
 
+<div style="margin:40px auto 0;max-width:740px;padding:0 18px;">
+  <section style="margin-bottom:32px;">
+    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-bottom:12px;">原神のガチャ仕様とソフト天井について</h2>
+    <p style="font-size:0.82em;color:var(--muted);line-height:1.9;">
+      原神のキャラクターバナーでは、★5キャラクターの基本排出率は0.6%です。73連以降から仮天井が発動し、毎連ごとに確率が上昇します。90連で確定排出となります。また、★5を獲得した際にピックアップキャラでない場合（すり抜け）、次回の★5は100%ピックアップキャラが排出される「確定保証」があります。<br>
+      武器バナーは62連から仮天井が始まり、80連確定。さらに「神鋳軌定」システムにより、軌定した武器以外の武器が出ると命定値が貯まり、次回の★5が軌定した武器で確定します。
+    </p>
+    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-top:20px;margin-bottom:12px;">計算機の使い方</h2>
+    <p style="font-size:0.82em;color:var(--muted);line-height:1.9;">
+      ①「手持ちリソース」に現在の原石・スターライト・ガチャ石の数を入力します。②「シミュレーション期間」で今日から目標バナー終了日を設定すると、バージョン配布分を含めた入手予定連数が自動計算されます。③「目標達成チェック」で目標の凸数・精錬数を設定すると達成可否を判定します。④「排出シミュレーター」では設定したガチャ回数でどれだけ★4・★5が引けるかシミュレーションすることができます。⑤「モンテカルロシミュレーション」では10万回試行による詳細な確率分布と最適な連数配分を確認できます。
+    </p>
+    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-top:20px;margin-bottom:12px;">よくある質問</h2>
+    <dl style="font-size:0.82em;color:var(--muted);line-height:1.9;">
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">すり抜け時の保証（確定枠）は引き継がれますか？</dt>
+      <dd style="margin:0 0 0 0;">はい。バナーが変わっても確定保証は引き継がれます。「現在の保証状態」で「次は確定」を選択してください。</dd>
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">バージョンごとの配布原石はどのくらいですか？</dt>
+      <dd style="margin:0 0 0 0;">アップデート時に640原石（バージョンアップ・サーバーメンテナンス補償・腕試し）、前半後半切り替え時に40原石（腕試し）、アップデート2週間前の金曜日に300原石（予告番組報酬）が配布されます。5.7以降はさらに幽境の激戦の報酬として450原石が追加されます（いずれも推定値）。</dd>
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">スターライトはどう換算されますか？</dt>
+      <dd style="margin:0 0 0 0;">スターライト5個につきガチャ石1個として換算しています。スターライト交換所で入手できる最大枚数を自動計算します。</dd>
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">ガチャを引いて新たに出たスターライトはどのように計算していますか？</dt>
+      <dd style="margin:0 0 0 0;">★4キャラ完凸想定で10回につき5個のスターライト、つまりガチャ石1個分還元される仕様として計算します。</dd>
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">任務や探索報酬についてはどうなっていますか？</dt>
+      <dd style="margin:0 0 0 0;">バージョンによって大きく変動するため、本計算機では計算後のガチャ回数の少数部分を切り上げるためだけに用いています。よって、バージョンによっては獲得原石数が大きく下回って算出されることがあります。</dd>
+    </dl>
+  </section>
+</div>
 <div style="margin:40px auto 24px;max-width:740px;padding:0 18px;">
   <div style="font-size:0.70em;color:var(--muted);line-height:1.8;border-top:1px solid var(--border);padding-top:14px;">
     <div style="font-weight:700;margin-bottom:6px;color:var(--muted)">⚠️ 免責事項・注意事項</div>
