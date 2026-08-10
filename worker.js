@@ -167,7 +167,10 @@ async function run(p) {
     if (currentCon === -1) return obtained >= 1 ? Math.min(6, obtained - 1) : -1;
     return Math.min(6, currentCon + obtained);
   };
-  const maxObtained = Math.max(...charSample, 1);
+  let maxObtained = 1;
+for (let i = 0; i < charSample.length; i++) {
+  if (charSample[i] > maxObtained) maxObtained = charSample[i];
+}
   const rawBuckets = new Array(maxObtained + 1).fill(0);
   charSample.forEach(v => { rawBuckets[v]++; });
   const finalConBuckets = {};
