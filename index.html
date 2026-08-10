@@ -391,6 +391,7 @@
     </div>
 
     <button class="calc-btn" id="calcBtn-mc" onclick="runMonteCarlo()">モンテカルロ シミュレーション →</button>
+    <button id="cancelBtn-mc" onclick="cancelMonteCarlo()" style="display:none;margin-top:8px;width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:0.85em;cursor:pointer;">✕ キャンセル</button>
 
     <div class="mc-progress-wrap" id="mcProgressWrap">
       <div class="mc-progress-label"><span>シミュレーション実行中...</span><span id="mcProgressPct">0%</span></div>
@@ -853,6 +854,14 @@ function syncMcWishes() {
 // ── モンテカルロ用シミュレーション ──
 let mcWorker = null;
 
+function cancelMonteCarlo() {
+  if (mcWorker) { mcWorker.terminate(); mcWorker = null; }
+  document.getElementById('mcProgressWrap').style.display = 'none';
+  document.getElementById('cancelBtn-mc').style.display = 'none';
+  const btn = document.getElementById('calcBtn-mc');
+  btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
+}
+
 function runMonteCarlo() {
   const income = calcIncome();
   if (!income) { alert("期間を正しく設定してください"); return; }
@@ -872,7 +881,8 @@ function runMonteCarlo() {
   const progressLabel = progressWrap.querySelector('.mc-progress-label span:first-child');
   progressWrap.style.display = 'block';
   document.getElementById('mcProgressFill').style.width = '0%';
-  document.getElementById('mcProgressPct').textContent  = '0%';    
+  document.getElementById('mcProgressPct').textContent  = '0%';
+  document.getElementById('cancelBtn-mc').style.display = 'block';
   document.getElementById('result-mc').style.display = 'none';
 
   // 前回のWorkerが残っていればキャンセル
@@ -885,6 +895,7 @@ function runMonteCarlo() {
 
     if (type === 'cancelled') {
       progressWrap.style.display = 'none';
+      document.getElementById('cancelBtn-mc').style.display = 'none';
       btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
       mcWorker = null;
       return;
@@ -1003,6 +1014,7 @@ function runMonteCarlo() {
       document.getElementById('detailBody-mc').innerHTML = detailHTML(income);
       progressWrap.style.display = 'none';
       document.getElementById('result-mc').style.display = 'block';
+      document.getElementById('cancelBtn-mc').style.display = 'none';
       btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
       document.getElementById('result-mc').scrollIntoView({ behavior:'smooth', block:'start' });
     }
@@ -1012,6 +1024,7 @@ function runMonteCarlo() {
     console.error('Worker error:', e);
     progressWrap.style.display = 'none';
     btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
+    document.getElementById('cancelBtn-mc').style.display = 'none';
     alert('計算中にエラーが発生しました。');
     mcWorker = null;
   };
@@ -1091,6 +1104,7 @@ updateInventory();
       <dd style="margin:0 0 0 0;">スターライト5個につきガチャ石1個として換算しています。スターライト交換所で入手できる最大枚数を自動計算します。</dd>
       <dt style="font-weight:700;color:var(--text);margin-top:10px;">ガチャを引いて新たに出たスターライトはどのように計算していますか？</dt>
       <dd style="margin:0 0 0 0;">★4キャラ完凸想定で10回につき5個のスターライト、つまりガチャ石1個分還元される仕様として計算します。</dd>
+
     </dl>
   </section>
 </div>
