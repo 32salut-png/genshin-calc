@@ -871,6 +871,8 @@ function runMonteCarlo() {
   const progressWrap  = document.getElementById('mcProgressWrap');
   const progressLabel = progressWrap.querySelector('.mc-progress-label span:first-child');
   progressWrap.style.display = 'block';
+  document.getElementById('mcProgressFill').style.width = '0%';
+  document.getElementById('mcProgressPct').textContent  = '0%';    
   document.getElementById('result-mc').style.display = 'none';
 
   // 前回のWorkerが残っていればキャンセル
