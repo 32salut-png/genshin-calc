@@ -82,7 +82,7 @@ async function run(p) {
     for (let s = 0; s <= COARSE; s++) {
       if (cancelled) { postMessage({ type: 'cancelled' }); return; }
       const cp = Math.round((s / COARSE) * totalPulls);
-      const rate = estimateSetRate(cp, totalPulls - cp, charPity0, mcGuaranteed, weapPity0, mcFatePoint, currentCon, targetCon, targetRef, currentRef, 2000);
+      const rate = estimateSetRate(cp, totalPulls - cp, charPity0, mcGuaranteed, weapPity0, mcFatePoint, currentCon, targetCon, targetRef, currentRef, 8000);
       if (rate > bestRate) { bestRate = rate; bestCp = cp; }
       postMessage({ type: 'progress', pct: Math.round((s / COARSE) * 20) });
     }
@@ -92,7 +92,7 @@ async function run(p) {
     for (let s = 0; s <= FINE; s++) {
       if (cancelled) { postMessage({ type: 'cancelled' }); return; }
       const cp = Math.round(lo + (s / FINE) * (hi - lo));
-      const rate = estimateSetRate(cp, totalPulls - cp, charPity0, mcGuaranteed, weapPity0, mcFatePoint, currentCon, targetCon, targetRef, currentRef, 5000);
+      const rate = estimateSetRate(cp, totalPulls - cp, charPity0, mcGuaranteed, weapPity0, mcFatePoint, currentCon, targetCon, targetRef, currentRef, 15000);
       if (rate > bestRate) { bestRate = rate; bestCp = cp; }
       postMessage({ type: 'progress', pct: 20 + Math.round((s / FINE) * 20) });
     }
