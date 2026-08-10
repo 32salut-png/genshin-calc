@@ -139,7 +139,7 @@ async function run(p) {
   postMessage({ type: 'progress', pct: 82 });
 
   // ④ lineChart用シミュレーション
-  const lineTrials = Math.min(trials, 50000);
+  const lineTrials = Math.min(trials, Math.max(2000, Math.round(3000000 / totalPulls)));
   const STEPS = 10;
   const lineXLabels = [], lineCharRates = [], lineWeapRates = [], lineSetRates = [];
   for (let step = 0; step <= STEPS; step++) {
