@@ -13,18 +13,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="Eo-Pl7oJFDLLMu_5jAPJCJL6spxdR-7pS3lCJSYt924" />
-  <title>原神 ガチャ確率 計算機 | 天井・完凸シミュレーター</title>
-  <meta name="description" content="原神のガチャ確率・天井・原石を計算できる無料ツール。手持ちの原石から何連引けるか、完凸に必要な期待値、キャラ・武器の排出確率をシミュレーションできます。">
+  <title>【原神】 ガチャ確率・原石計算機 | 天井・完凸シミュレーター</title>
+  <meta name="description" content="原神のガチャ確率・天井・原石を計算できるツール。手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井をシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
   <meta name="keywords" content="原神, ガチャ確率, ガチャ計算, 原石計算, ガチャシミュレーター, 天井, 完凸, 期待値, 排出率, 原神ガチャ">
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="原神 ガチャ確率 計算機 | 完凸・期待値シミュレーター">
-  <meta property="og:description" content="手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井を10万回のシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
+  <meta property="og:title" content="【原神】 ガチャ確率・原石計算機 | 天井・完凸シミュレーター">
+  <meta property="og:description" content="原神のガチャ確率・天井・原石を計算できるツール。手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井をシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://32salut-png.github.io/genshin-calc/">
   <meta property="og:image" content="https://32salut-png.github.io/genshin-calc/favicon.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="原神 ガチャ確率 計算機 | 完凸・期待値シミュレーター">
-  <meta name="twitter:description" content="手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井を10万回のシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
+  <meta name="twitter:title" content="【原神】 ガチャ確率・原石計算機 | 天井・完凸シミュレーター">
+  <meta name="twitter:description" content="原神のガチャ確率・天井・原石を計算できるツール。手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井をシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
   <meta name="twitter:image" content="https://32salut-png.github.io/genshin-calc/favicon.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
@@ -37,7 +37,7 @@
     "url": "https://32salut-png.github.io/genshin-calc/",
     "operatingSystem": "All",
     "applicationCategory": "GameApplication",
-    "description": "原神のガチャ確率や目標達成に必要な原石数をモンテカルロシミュレーションで精密計算するツール。ソフト天井・命定値・バージョン配布原石に対応。"
+    "description": "原神のガチャ確率や目標達成に必要な原石数をモンテカルロシミュレーションで精密計算するツール。"
   }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1101,7 +1101,7 @@ updateInventory();
 
 <div style="margin:40px auto 0;max-width:740px;padding:0 18px;">
   <section style="margin-bottom:32px;">
-    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-bottom:12px;">原神のガチャ仕様とソフト天井について</h2>
+    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-bottom:12px;">原神のガチャ仕様と仮天井について</h2>
     <p style="font-size:0.82em;color:var(--muted);line-height:1.9;">
       原神のキャラクターバナーでは、★5キャラクターの基本排出率は0.6%です。73連以降から仮天井が発動し、毎連ごとに確率が上昇します。90連で確定排出となります。また、★5を獲得した際にピックアップキャラでない場合（すり抜け）、次回の★5は100%ピックアップキャラが排出される「確定保証」があります。<br>
       武器バナーは62連から仮天井が始まり、80連確定。さらに「神鋳軌定」システムにより、軌定した武器以外の武器が出ると命定値が貯まり、次回の★5が軌定した武器で確定します。
