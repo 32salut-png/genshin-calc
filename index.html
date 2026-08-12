@@ -309,18 +309,18 @@
       </div>
       <!-- [FIX] 確定保証トグルを追加 -->
       <div style="margin-top:14px;">
-        <div style="font-size:0.75em;color:var(--muted);margin-bottom:8px;font-weight:600;">キャラバナー：50/50状態</div>
+        <div style="font-size:0.75em;color:var(--muted);margin-bottom:8px;font-weight:600;">キャラバナー：すり抜け</div>
         <div class="guarantee-row-goal">
-          <div class="guarantee-btn-goal active-g" id="goal-btn-50-50" onclick="setGoalGuarantee(false)">🎲 50/50状態<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">次は50%で確定</span></div>
-          <div class="guarantee-btn-goal" id="goal-btn-guaranteed" onclick="setGoalGuarantee(true)">✅ 確定保証あり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">次は100%で確定</span></div>
+          <div class="guarantee-btn-goal active-g" id="goal-btn-50-50" onclick="setGoalGuarantee(false)">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
+          <div class="guarantee-btn-goal" id="goal-btn-guaranteed" onclick="setGoalGuarantee(true)">✅ 確定保証あり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
         </div>
       </div>
       <!-- [FIX] 武器命定値トグルを追加 -->
       <div style="margin-top:12px;">
-        <div style="font-size:0.75em;color:var(--muted);margin-bottom:8px;font-weight:600;">武器バナー：命定値（目標武器を引くか？）</div>
+        <div style="font-size:0.75em;color:var(--muted);margin-bottom:8px;font-weight:600;">武器バナー：命定値</div>
         <div class="guarantee-row-goal">
-          <div class="guarantee-btn-goal active-g" id="goal-fate-0" onclick="setGoalFate(0)">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">次の★5は37.5%</span></div>
-          <div class="guarantee-btn-goal" id="goal-fate-1" onclick="setGoalFate(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">次の★5は100%確定</span></div>
+          <div class="guarantee-btn-goal active-g" id="goal-fate-0" onclick="setGoalFate(0)">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
+          <div class="guarantee-btn-goal" id="goal-fate-1" onclick="setGoalFate(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で武器</span></div>
         </div>
       </div>
       <div class="pity-hint">⚡ ソフトpity考慮：キャラ74連〜、武器63連〜以降の確率上昇を加味した<b>期待連数</b>で計算。<br>武器バナーは37.5/62.5システム（命定値）に基づき期待連数を算出。</div>
@@ -377,20 +377,20 @@
       <div class="goal-grid">
         <div class="goal-item"><div class="goal-label">現在の凸数<br><span style="color:var(--accent2);font-size:0.85em">（未所持=-1）</span></div><select id="mcCurrentCon"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
         <div class="goal-item"><div class="goal-label">キャラ<br>すでに引いた数<br><span style="color:var(--gold);font-size:0.85em">0〜89</span></div><input type="number" id="mcCharPity" value="0" min="0" max="89"></div>
-        <div class="goal-item"><div class="goal-label">キャラバナー<br>50/50状態</div>
+        <div class="goal-item"><div class="goal-label">キャラバナー<br>すり抜け</div>
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
-            <div class="guarantee-btn-goal active-g" id="btn-50-50" onclick="setGuarantee(false)" style="padding:7px 4px;font-size:0.76em;">🎲 50/50<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%で確定</span></div>
-            <div class="guarantee-btn-goal" id="btn-guaranteed" onclick="setGuarantee(true)" style="padding:7px 4px;font-size:0.76em;">✅ 確定保証<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">100%確定</span></div>
+            <div class="guarantee-btn-goal active-g" id="btn-50-50" onclick="setGuarantee(false)" style="padding:7px 4px;font-size:0.76em;">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
+            <div class="guarantee-btn-goal" id="btn-guaranteed" onclick="setGuarantee(true)" style="padding:7px 4px;font-size:0.76em;">✅ 確定保証<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
           </div>
         </div>
       </div>
       <div class="goal-grid" style="margin-top:10px;">
         <div class="goal-item"><div class="goal-label">現在の精錬数<br><span style="color:var(--gold);font-size:0.85em">武器バナー</span></div><select id="mcCurrentRefine"><option value="0">R0（未所持）</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
         <div class="goal-item"><div class="goal-label">武器<br>すでに引いた数<br><span style="color:var(--gold);font-size:0.85em">0〜79</span></div><input type="number" id="mcWeapPity" value="0" min="0" max="79"></div>
-        <div class="goal-item"><div class="goal-label">命定値<br>（運命の分かれ道）</div>
+        <div class="goal-item"><div class="goal-label">命定値</div>
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
-            <div class="guarantee-btn-goal active-g" id="fate-btn-0" onclick="setFatePoint(0)" style="padding:7px 4px;font-size:0.76em;">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">次★5は37.5%</span></div>
-            <div class="guarantee-btn-goal" id="fate-btn-1" onclick="setFatePoint(1)" style="padding:7px 4px;font-size:0.76em;">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">次★5は確定</span></div>
+            <div class="guarantee-btn-goal active-g" id="fate-btn-0" onclick="setFatePoint(0)" style="padding:7px 4px;font-size:0.76em;">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
+            <div class="guarantee-btn-goal" id="fate-btn-1" onclick="setFatePoint(1)" style="padding:7px 4px;font-size:0.76em;">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で目標武器</span></div>
           </div>
         </div>
       </div>
