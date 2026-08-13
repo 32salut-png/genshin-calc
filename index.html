@@ -399,7 +399,6 @@
           </div>
         </div>
       </div>
-      <div class="pity-hint" style="margin-top:12px;">⚡ キャラ：確定保証ありの場合、次の★5は100%目標キャラ。武器：命定値1の場合、次の★5は100%目標武器。</div>
     </div>
 
     <div class="section">
@@ -963,7 +962,11 @@ function runMonteCarlo() {
       }
 
       // レートカード
-      const showCons = (currentCon === -1 ? [0,1,2,3,4,5,6] : [targetCon]).filter(c => conRates[c] !== undefined);
+      const startCon = currentCon === -1 ? 0 : currentCon + 1;
+      const showCons = Array.from(
+        { length: 7 - startCon },
+        (_, i) => startCon + i
+      ).filter(c => conRates[c] !== undefined);
       let cardsHTML = '';
       showCons.forEach(c => {
         cardsHTML += `<div class="mc-rate-card ${c===targetCon?'highlight':''}"><div class="mc-rate-card-label">C${c}<br>到達率</div><div class="mc-rate-card-pct">${conRates[c].toFixed(1)}%</div><div class="mc-rate-card-sub">${trials.toLocaleString()}試行</div></div>`;
