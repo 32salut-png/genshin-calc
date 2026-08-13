@@ -255,6 +255,18 @@
     .val { font-weight: 700; color: var(--green); text-align: right; font-variant-numeric: tabular-nums; }
     .val.special { color: var(--gold); }
     tr.cashback { background: rgba(227,179,65,0.06); }
+    /* インラインCSS整理用クラス */
+    .mc-banner-sub-label { font-size: 0.75em; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .mc-btn-group { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .mc-col-group { display: flex; flex-direction: column; gap: 10px; }
+    .guarantee-btn-mc { padding: 7px 4px; font-size: 0.76em; }
+    .mc-goal-item-center { display: flex; flex-direction: column; justify-content: center; }
+    .mc-select-styled { color: var(--text); font-size: 1em; font-weight: 700; }
+    .goal-label-accent { color: #58a6ff; font-size: 0.85em; }
+    .goal-label-gold { color: var(--gold); font-size: 0.85em; }
+    .goal-label-accent2 { color: var(--accent2); font-size: 0.85em; }
+    .needs-bar-nums { font-size: 0.82em; font-weight: 700; }
+    .sim-note { margin-top: 10px; font-size: 0.75em; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -299,25 +311,25 @@
     <div class="section">
       <div class="section-title">目標設定</div>
       <div class="goal-grid">
-        <div class="goal-item"><div class="goal-label">現在の凸数<br><span style="color:#58a6ff;font-size:0.85em">（未所持=-1）</span></div><select id="currentCon" aria-label="現在の凸数"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
+        <div class="goal-item"><div class="goal-label">現在の凸数<br><span class="goal-label-accent">（未所持=-1）</span></div><select id="currentCon" aria-label="現在の凸数"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
         <div class="goal-item"><div class="goal-label">目標凸数</div><select id="targetCon" aria-label="目標凸数"><option value="0" selected>C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option><option value="6">C6</option></select></div>
-        <div class="goal-item"><div class="goal-label">目標精錬数<br><span style="color:#e3b341;font-size:0.85em">武器バナー</span></div><select id="weaponCopies" aria-label="目標精錬数"><option value="0">武器なし</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
+        <div class="goal-item"><div class="goal-label">目標精錬数<br><span class="goal-label-gold">武器バナー</span></div><select id="weaponCopies" aria-label="目標精錬数"><option value="0">武器なし</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
       </div>
       <div class="pity-row">
         <div class="pity-item"><div class="pity-label">キャラバナー<br>すでに引いた数</div><input type="number" id="charPity" aria-label="キャラバナー すでに引いた数" value="0" min="0" max="89"></div>
         <div class="pity-item"><div class="pity-label">武器バナー<br>すでに引いた数</div><input type="number" id="weapPity" aria-label="武器バナー すでに引いた数" value="0" min="0" max="79"></div>
       </div>
-      <!-- [FIX] 確定保証トグルを追加 -->
-      <div style="margin-top:14px;">
-        <div style="font-size:0.75em;color:var(--muted);margin-bottom:8px;font-weight:600;">キャラバナー：すり抜け</div>
+      <!-- キャラバナー：すり抜け保証トグル -->
+      <div class="mc-banner-group" style="margin-top:14px;">
+        <div class="mc-banner-sub-label">キャラバナー：すり抜け</div>
         <div class="guarantee-row-goal">
           <div class="guarantee-btn-goal active-g" id="goal-btn-50-50" onclick="setGoalGuarantee(false)">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
           <div class="guarantee-btn-goal" id="goal-btn-guaranteed" onclick="setGoalGuarantee(true)">✅ 確定保証あり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
         </div>
       </div>
-      <!-- [FIX] 武器命定値トグルを追加 -->
-      <div style="margin-top:12px;">
-        <div style="font-size:0.75em;color:var(--muted);margin-bottom:8px;font-weight:600;">武器バナー：命定値</div>
+      <!-- 武器バナー：命定値トグル -->
+      <div class="mc-banner-group" style="margin-top:12px;">
+        <div class="mc-banner-sub-label">武器バナー：命定値</div>
         <div class="guarantee-row-goal">
           <div class="guarantee-btn-goal active-g" id="goal-fate-0" onclick="setGoalFate(0)">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
           <div class="guarantee-btn-goal" id="goal-fate-1" onclick="setGoalFate(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で武器</span></div>
@@ -329,7 +341,7 @@
     <div class="result-block" id="result-goal">
       <div id="verdictBanner" class="verdict-banner ok"><div class="verdict-icon" id="verdictIcon">✅</div><div class="verdict-body"><div class="verdict-tag" id="verdictTag">余裕</div><div class="verdict-title" id="verdictTitle">目標達成できます</div><div class="verdict-detail" id="verdictDetail"></div></div></div>
       <div class="needs-bar-wrap" id="needsBarWrap" style="display:none">
-        <div class="needs-bar-label"><span class="needs-bar-title">必要連数 vs 入手可能連数</span><span id="needsBarNums" style="font-size:0.82em;font-weight:700;"></span></div>
+        <div class="needs-bar-label"><span class="needs-bar-title">必要連数 vs 入手可能連数</span><span id="needsBarNums" class="needs-bar-nums"></span></div>
         <div class="bar-track"><div class="bar-fill ok" id="barFill" style="width:0%"></div></div>
         <div class="needs-breakdown" id="needsBreakdown"></div>
       </div>
@@ -343,7 +355,7 @@
     <div class="section">
       <div class="section-title">引く回数を指定</div>
       <div class="sim-input-wrap"><input type="number" id="simWishes" value="0" min="0" placeholder="連数" oninput="onSimWishInput()"><span class="sim-unit">連</span></div>
-      <div style="margin-top:10px;font-size:0.75em;color:var(--muted);">期間・課金設定を変えると自動で連数が変わります。直接入力で上書きも可。</div>
+      <div class="sim-note">期間・課金設定を変えると自動で連数が変わります。直接入力で上書きも可。</div>
       <div class="sim-pity-row">
         <div class="pity-item"><div class="pity-label">キャラバナー<br>すでに引いた数</div><input type="number" id="simCharPity" value="0" min="0" max="89"></div>
         <div class="pity-item"><div class="pity-label">武器バナー<br>すでに引いた数</div><input type="number" id="simWeapPity" value="0" min="0" max="79"></div>
@@ -368,34 +380,34 @@
     <div class="section">
       <div class="section-title">引く回数</div>
       <div class="sim-input-wrap"><input type="number" id="mcWishes" value="0" min="0" placeholder="連数" oninput="onMcWishInput()"><span class="sim-unit">連</span></div>
-      <div style="margin-top:8px;font-size:0.75em;color:var(--muted);">期間・課金設定と連動。直接入力で上書き可。</div>
+      <div class="sim-note">期間・課金設定と連動。直接入力で上書き可。</div>
     </div>
 
     <div class="section">
       <div class="section-title">バナー状態</div>
       <!-- キャラ：左に凸数+pityを縦積み、右にすり抜けボタン -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div class="goal-item"><div class="goal-label">現在の凸数<br><span style="color:var(--accent2);font-size:0.85em">（未所持=-1）</span></div><select id="mcCurrentCon" aria-label="現在の凸数"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
-          <div class="goal-item"><div class="goal-label">キャラ<br>すでに引いた数<br><span style="color:var(--gold);font-size:0.85em">0〜89</span></div><input type="number" id="mcCharPity" aria-label="キャラ すでに引いた数" value="0" min="0" max="89"></div>
+        <div class="mc-col-group">
+          <div class="goal-item"><div class="goal-label">現在の凸数<br><span class="goal-label-accent2">（未所持=-1）</span></div><select id="mcCurrentCon" aria-label="現在の凸数"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
+          <div class="goal-item"><div class="goal-label">キャラ<br>すでに引いた数<br><span class="goal-label-gold">0〜89</span></div><input type="number" id="mcCharPity" aria-label="キャラ すでに引いた数" value="0" min="0" max="89"></div>
         </div>
-        <div class="goal-item" style="display:flex;flex-direction:column;justify-content:center;"><div class="goal-label">キャラバナー<br>すり抜け</div>
-          <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
-            <div class="guarantee-btn-goal active-g" id="btn-50-50" onclick="setGuarantee(false)" style="padding:7px 4px;font-size:0.76em;">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
-            <div class="guarantee-btn-goal" id="btn-guaranteed" onclick="setGuarantee(true)" style="padding:7px 4px;font-size:0.76em;">✅ 確定保証<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
+        <div class="goal-item mc-goal-item-center"><div class="goal-label">キャラバナー<br>すり抜け</div>
+          <div class="mc-btn-group">
+            <div class="guarantee-btn-goal active-g" id="btn-50-50" onclick="setGuarantee(false)" class="guarantee-btn-mc">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
+            <div class="guarantee-btn-goal" id="btn-guaranteed" onclick="setGuarantee(true)" class="guarantee-btn-mc">✅ 確定保証<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
           </div>
         </div>
       </div>
       <!-- 武器：左に精錬数+pityを縦積み、右に命定値ボタン -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div class="goal-item"><div class="goal-label">現在の精錬数<br><span style="color:var(--gold);font-size:0.85em">武器バナー</span></div><select id="mcCurrentRefine" aria-label="現在の精錬数"><option value="0">R0（未所持）</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
-          <div class="goal-item"><div class="goal-label">武器<br>すでに引いた数<br><span style="color:var(--gold);font-size:0.85em">0〜79</span></div><input type="number" id="mcWeapPity" aria-label="武器 すでに引いた数" value="0" min="0" max="79"></div>
+        <div class="mc-col-group">
+          <div class="goal-item"><div class="goal-label">現在の精錬数<br><span class="goal-label-gold">武器バナー</span></div><select id="mcCurrentRefine" aria-label="現在の精錬数"><option value="0">R0（未所持）</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
+          <div class="goal-item"><div class="goal-label">武器<br>すでに引いた数<br><span class="goal-label-gold">0〜79</span></div><input type="number" id="mcWeapPity" aria-label="武器 すでに引いた数" value="0" min="0" max="79"></div>
         </div>
-        <div class="goal-item" style="display:flex;flex-direction:column;justify-content:center;"><div class="goal-label">命定値</div>
-          <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
-            <div class="guarantee-btn-goal active-g" id="fate-btn-0" onclick="setFatePoint(0)" style="padding:7px 4px;font-size:0.76em;">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
-            <div class="guarantee-btn-goal" id="fate-btn-1" onclick="setFatePoint(1)" style="padding:7px 4px;font-size:0.76em;">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で目標武器</span></div>
+        <div class="goal-item mc-goal-item-center"><div class="goal-label">命定値</div>
+          <div class="mc-btn-group">
+            <div class="guarantee-btn-goal active-g" id="fate-btn-0" onclick="setFatePoint(0)" class="guarantee-btn-mc">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
+            <div class="guarantee-btn-goal" id="fate-btn-1" onclick="setFatePoint(1)" class="guarantee-btn-mc">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で目標武器</span></div>
           </div>
         </div>
       </div>
@@ -404,8 +416,8 @@
     <div class="section">
       <div class="section-title">目標設定</div>
       <div class="mc-form-grid">
-        <div class="mc-form-item"><div class="mc-form-label">目標凸数</div><select id="mcTargetCon" aria-label="目標凸数" style="color:var(--text);font-size:1em;font-weight:700;"><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option><option value="6">C6</option></select></div>
-        <div class="mc-form-item"><div class="mc-form-label">目標精錬数</div><select id="mcTargetRefine" aria-label="目標精錬数" style="color:var(--text);font-size:1em;font-weight:700;"><option value="0">武器なし</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select><input type="hidden" id="mcTrials" value="100000"></div>
+        <div class="mc-form-item"><div class="mc-form-label">目標凸数</div><select id="mcTargetCon" aria-label="目標凸数" class="mc-select-styled"><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option><option value="6">C6</option></select></div>
+        <div class="mc-form-item"><div class="mc-form-label">目標精錬数</div><select id="mcTargetRefine" aria-label="目標精錬数" class="mc-select-styled"><option value="0">武器なし</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select><input type="hidden" id="mcTrials" value="100000"></div>
       </div>
       
     </div>
@@ -436,6 +448,10 @@
 </div>
 
 <script>
+// ユーティリティ
+const $ = id => document.getElementById(id);
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
 document.getElementById('startDate').valueAsDate = new Date();
 
 function updatePatchSchedule() {
@@ -470,7 +486,7 @@ function updatePatchSchedule() {
 }
 updatePatchSchedule();
 
-// [FIX] toggle ボタンのイベント: change イベントを直接使い二重登録を避ける
+// トグルボタンのイベント（changeイベントで二重登録を防ぐ）
 ['blessing','bp'].forEach(key => {
   const lbl = document.getElementById('lbl-' + key);
   const cb  = document.getElementById(key === 'blessing' ? 'isBlessing' : 'isBP');
@@ -484,7 +500,7 @@ let simManualOverride = false;
 let mcManualOverride  = false;
 let mcGuaranteed      = false;
 let mcFatePoint       = 0;
-// [FIX] 目標達成チェック用の保証状態
+// 目標達成チェック用の保証状態
 let goalGuaranteed    = false;
 let goalFatePoint     = 0;
 let lineChart         = null;
@@ -512,7 +528,7 @@ function setFatePoint(val) {
   document.getElementById('fate-btn-1').className = 'guarantee-btn-goal' + (mcFatePoint === 1 ? ' active-r' : '');
 }
 
-// [FIX] 目標達成チェック用トグル
+// 目標達成チェック用トグル
 function setGoalGuarantee(val) {
   goalGuaranteed = val;
   document.getElementById('goal-btn-50-50').className    = 'guarantee-btn-goal' + (!val ? ' active-g' : '');
@@ -529,7 +545,7 @@ function updateInventory() {
   const star  = parseFloat(document.getElementById('starglitter').value) || 0;
   const fates = parseFloat(document.getElementById('fates').value)       || 0;
   const primoW = primo / 160;
-  // [FIX] スターライトは5個で運命の石1個（ガチャ1回 = 運命の石1個 = 160原石）
+  // スターライト5個 = 運命の石1個 = 160原石換算
   const starW = Math.floor(star / 5);
   const total  = primoW + starW + fates;
   document.getElementById('conv-primo').textContent  = primo > 0 ? `≈ ${primoW.toFixed(2)} 連` : '';
@@ -554,7 +570,7 @@ function calcIncome() {
   const primo = parseFloat(document.getElementById('primogems').value) || 0;
   const star  = parseFloat(document.getElementById('starglitter').value) || 0;
   const fates = parseFloat(document.getElementById('fates').value) || 0;
-  // [FIX] スターライトは5個で1連
+  // スターライト5個で1連換算
   const currentWishes = primo / 160 + Math.floor(star / 5) + fates;
 
   const diffDays   = Math.ceil(Math.abs(end - start) / (1000*60*60*24));
@@ -613,10 +629,10 @@ function calcIncome() {
   const stoneTotal   = dailyBase + blessStone + spiralStone + theaterStone + verStone;
   const incomeWishes = (stoneTotal / 160) + shopW + bpW;
   const rawTotal      = incomeWishes + currentWishes;
-  // [FIX] スターライト還元：所持＋期間収入のトータル連数の10%還元
+  // スターライト還元：トータル連数の10%
   const starglitterBonus = rawTotal * 0.10;
   const subtotal       = rawTotal + starglitterBonus;
-  // [FIX] 計算の最後に小数部分を切り上げ（端数分は探索報酬として還元欄に含める）
+  // 小数部分を切り上げ（端数は還元欄に含める）
   const finalTotal      = Math.ceil(subtotal);
   const cashback        = starglitterBonus + (finalTotal - subtotal);
 
@@ -733,7 +749,7 @@ function calcGoal() {
   const charPity     = Math.min(89, Math.max(0, parseInt(document.getElementById('charPity').value) || 0));
   const weapPity     = Math.min(79, Math.max(0, parseInt(document.getElementById('weapPity').value) || 0));
   const charCopies   = copiesNeeded(currentCon, targetCon);
-  // [FIX] goalGuaranteed/goalFatePoint を使用
+  // goalGuaranteed/goalFatePoint を参照
   const charNeeded   = expectedCharWishes(charCopies, charPity, goalGuaranteed);
   const weapNeeded   = expectedWeapWishes(weaponCopies, weapPity, goalFatePoint);
   const totalNeeded  = charNeeded + weapNeeded;
@@ -774,7 +790,7 @@ function syncSimWishes() {
   if (!simManualOverride) document.getElementById('simWishes').value = Math.ceil(income.finalTotal);
 }
 
-// [FIX] キャラバナーの期待★5数: ★5回数（全体）を計算。50/50は考慮せずpity分布で純粋な★5排出数
+// キャラバナーの期待★5数（50/50考慮なし、pity分布ベース）
 function simExpectedSRAccurate(totalPulls, startPity, probFn, maxPity) {
   let state = new Map(); state.set(startPity, 1.0);
   let totalSR = 0;
@@ -816,13 +832,13 @@ function calcSim() {
   const weapPity   = Math.min(79, Math.max(0, parseInt(document.getElementById('simWeapPity').value)||0));
   const halfChar   = Math.floor(totalPulls / 2), halfWeap = totalPulls - halfChar;
 
-  // [FIX] ★5総数(50/50込み): キャラバナーの場合、★5のうち約半分が目標キャラ
+  // ★5総数（50/50込み）：約半数が目標キャラ
   const char5_total_all  = simExpectedSRAccurate(totalPulls, charPity, charProb, 90);
   const char5_rateup_all = char5_total_all * 0.5; // 50/50で半分が目標キャラ
   const char5_total_half = simExpectedSRAccurate(halfChar, charPity, charProb, 90);
   const char5_rateup_half = char5_total_half * 0.5;
 
-  // [FIX] 武器バナー★5目標武器: 37.5/62.5システムで期待値は約61.5%が目標武器
+  // 武器バナー★5目標武器：37.5/62.5システムで期待値約61.5%が目標武器
   // (fate=0から: 37.5%で即確保／62.5%で外れ→次の★5は100%確定 なので2回以内に1本)
   // fate=0: 期待(1本取得に必要な★5回数) = 1*0.375 + 2*0.625 = 1.625
   // つまり1本につき1.625回の★5が必要 → 1本/1.625★5 ≈ 0.615本/★5
@@ -887,8 +903,8 @@ function runMonteCarlo() {
   if (!income) { alert("期間を正しく設定してください"); return; }
 
   const totalPulls = parseInt(document.getElementById('mcWishes').value) || Math.ceil(income.finalTotal);
-  const charPity0  = Math.min(89, Math.max(0, parseInt(document.getElementById('mcCharPity').value) || 0));
-  const weapPity0  = Math.min(79, Math.max(0, parseInt(document.getElementById('mcWeapPity').value) || 0));
+  const charPity0  = clamp(parseInt($('mcCharPity').value) || 0, 0, 89);
+  const weapPity0  = clamp(parseInt($('mcWeapPity').value) || 0, 0, 79);
   const currentCon = parseInt(document.getElementById('mcCurrentCon').value);
   const targetCon  = parseInt(document.getElementById('mcTargetCon').value);
   const targetRef  = parseInt(document.getElementById('mcTargetRefine').value);
