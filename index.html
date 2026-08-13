@@ -966,7 +966,7 @@ function runMonteCarlo() {
       const showCons = (currentCon === -1 ? [0,1,2,3,4,5,6] : [targetCon]).filter(c => conRates[c] !== undefined);
       let cardsHTML = '';
       showCons.forEach(c => {
-        cardsHTML += `<div class="mc-rate-card ${c===targetCon?'highlight':''}"><div class="mc-rate-card-label">C${c}以上<br>到達率</div><div class="mc-rate-card-pct">${conRates[c].toFixed(1)}%</div><div class="mc-rate-card-sub">${trials.toLocaleString()}試行</div></div>`;
+        cardsHTML += `<div class="mc-rate-card ${c===targetCon?'highlight':''}"><div class="mc-rate-card-label">C${c}<br>到達率</div><div class="mc-rate-card-pct">${conRates[c].toFixed(1)}%</div><div class="mc-rate-card-sub">${trials.toLocaleString()}試行</div></div>`;
       });
       if (weapReachRate !== null) {
         cardsHTML += `<div class="mc-rate-card highlight" style="border-color:var(--gold);"><div class="mc-rate-card-label" style="color:var(--gold)">R${targetRef}<br>到達率（武器）</div><div class="mc-rate-card-pct" style="background:linear-gradient(135deg,var(--gold),#c0a060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${weapReachRate.toFixed(1)}%</div><div class="mc-rate-card-sub">${trials.toLocaleString()}試行</div></div>`;
