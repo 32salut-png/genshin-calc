@@ -293,12 +293,12 @@
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" id="section-period">
     <div class="section-title">シミュレーション期間</div>
     <div class="date-row"><input type="date" id="startDate" aria-label="開始日"><span class="date-sep">〜</span><input type="date" id="endDate" aria-label="終了日"></div>
     <div id="patchSchedule" style="margin-top:10px;font-size:0.72em;color:var(--muted);line-height:2;"></div>
   </div>
-  <div class="section">
+  <div class="section" id="section-billing">
     <div class="section-title">課金オプション</div>
     <div class="toggle-grid">
       <label class="toggle-item" id="lbl-blessing"><input type="checkbox" id="isBlessing"><div class="toggle-dot"></div><div class="toggle-text">🌙 空月の祝福</div></label>
@@ -525,6 +525,10 @@ function switchMode(mode) {
   document.querySelector('.tab-' + mode).classList.add('active');
   document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('visible'));
   document.getElementById('panel-' + mode).classList.add('visible');
+  // 逆算タブでは期間・課金を非表示
+  const hide = mode === 'goal';
+  $('section-period').style.display  = hide ? 'none' : '';
+  $('section-billing').style.display = hide ? 'none' : '';
   if (mode === 'sim') syncSimWishes();
   if (mode === 'mc')  syncMcWishes();
 }
