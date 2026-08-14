@@ -54,7 +54,7 @@
     h1 { text-align: center; font-size: 1.3em; font-weight: 700; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
 
     .mode-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
-    .mode-tab { padding: 11px 6px; text-align: center; border-radius: 9px; cursor: pointer; font-size: 0.8em; font-weight: 700; color: var(--muted); transition: background 0.2s, color 0.2s; user-select: none; line-height: 1.35; }
+    .mode-tab { padding: 8px 4px; text-align: center; border-radius: 9px; cursor: pointer; font-size: 0.78em; font-weight: 700; color: var(--muted); transition: background 0.2s, color 0.2s; user-select: none; line-height: 1.4; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .mode-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
     .mode-tab .tab-icon { font-size: 1.1em; display: block; margin-bottom: 3px; }
     .mode-tab.active.tab-goal { border-color: var(--accent2); color: var(--accent2); }
@@ -274,9 +274,9 @@
   <h1>✦ 原神 ガチャリソース計算機 Pro</h1>
 
   <div class="mode-tabs">
-    <div class="mode-tab tab-goal active" onclick="switchMode('goal')"><span class="tab-icon">🎯</span>目標達成チェック</div>
-    <div class="mode-tab tab-sim"  onclick="switchMode('sim')"><span class="tab-icon">🎲</span>排出シミュレーター</div>
-    <div class="mode-tab tab-mc"   onclick="switchMode('mc')"><span class="tab-icon">📊</span>モンテカルロ確率</div>
+    <div class="mode-tab tab-mc active" onclick="switchMode('mc')"><span class="tab-icon">📊</span>モンテカルロ<br>確率</div>
+    <div class="mode-tab tab-goal"      onclick="switchMode('goal')"><span class="tab-icon">🔢</span>必要原石<br>逆算</div>
+    <div class="mode-tab tab-sim"       onclick="switchMode('sim')"><span class="tab-icon">🎲</span>排出<br>シミュレーション</div>
   </div>
 
   <!-- 共通：所持物 -->
@@ -306,13 +306,14 @@
     </div>
   </div>
 
-  <!-- MODE A：目標達成チェック -->
-  <div class="mode-panel visible" id="panel-goal">
+  <!-- MODE A：必要原石 逆算 -->
+  <div class="mode-panel" id="panel-goal">
     <div class="section">
       <div class="section-title">目標設定</div>
-      <div class="goal-grid">
+      <div class="goal-grid" style="grid-template-columns:1fr 1fr;">
         <div class="goal-item"><div class="goal-label">現在の凸数<br><span class="goal-label-accent">（未所持=-1）</span></div><select id="currentCon" aria-label="現在の凸数"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
         <div class="goal-item"><div class="goal-label">目標凸数</div><select id="targetCon" aria-label="目標凸数"><option value="0" selected>C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option><option value="6">C6</option></select></div>
+        <div class="goal-item"><div class="goal-label">現在の精錬数<br><span class="goal-label-gold">武器バナー</span></div><select id="goalCurrentRefine" aria-label="現在の精錬数"><option value="0">R0（未所持）</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
         <div class="goal-item"><div class="goal-label">目標精錬数<br><span class="goal-label-gold">武器バナー</span></div><select id="weaponCopies" aria-label="目標精錬数"><option value="0">武器なし</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
       </div>
       <div class="pity-row">
@@ -335,18 +336,30 @@
           <div class="guarantee-btn-goal" id="goal-fate-1" onclick="setGoalFate(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で武器</span></div>
         </div>
       </div>
-      <div class="pity-hint">⚡ ソフトpity考慮：キャラ74連〜、武器63連〜以降の確率上昇を加味した<b>期待連数</b>で計算。<br>武器バナーは37.5/62.5システム（命定値）に基づき期待連数を算出。</div>
+      <div class="pity-hint">⚡ 仮天井考慮：キャラ74連〜、武器63連〜以降の確率上昇を加味した<b>期待連数</b>で計算。<br>武器バナーは37.5/62.5システム（命定値）に基づき期待連数を算出。</div>
     </div>
-    <button class="calc-btn" id="calcBtn-goal" onclick="calcGoal()">目標達成チェック →</button>
-    <div class="result-block" id="result-goal">
-      <div id="verdictBanner" class="verdict-banner ok"><div class="verdict-icon" id="verdictIcon">✅</div><div class="verdict-body"><div class="verdict-tag" id="verdictTag">余裕</div><div class="verdict-title" id="verdictTitle">目標達成できます</div><div class="verdict-detail" id="verdictDetail"></div></div></div>
-      <div class="needs-bar-wrap" id="needsBarWrap" style="display:none">
-        <div class="needs-bar-label"><span class="needs-bar-title">必要連数 vs 入手可能連数</span><span id="needsBarNums" class="needs-bar-nums"></span></div>
-        <div class="bar-track"><div class="bar-fill ok" id="barFill" style="width:0%"></div></div>
-        <div class="needs-breakdown" id="needsBreakdown"></div>
+    <button class="calc-btn" id="calcBtn-goal" onclick="calcReverse()">必要原石を逆算 →</button>
+    <div class="result-block" id="result-goal" style="display:none;">
+      <!-- メイン結果 -->
+      <div class="result-total" id="reverseMainResult">
+        <div class="result-label">目標達成に必要な連数（期待値）</div>
+        <div class="result-num" id="reverseNeededWishes">0</div>
+        <div class="result-unit">連</div>
+        <div class="result-sub" id="reverseNeededPrimo"></div>
       </div>
-      <div class="result-total"><div class="result-label">最終的な期待合計</div><div class="result-num" id="totalWishes-goal">0</div><div class="result-unit">連</div><div class="result-sub">所持リソース＋期間収入＋スターライト還元</div></div>
-      <div class="section"><div class="section-title">収入内訳</div><table class="detail-table"><thead><tr><th>項目</th><th>詳細</th><th style="text-align:right">換算(連)</th></tr></thead><tbody id="detailBody-goal"></tbody></table></div>
+      <!-- 手持ちとの差分 -->
+      <div id="reverseDiffBanner" class="verdict-banner ok" style="margin-top:12px;">
+        <div class="verdict-icon" id="reverseDiffIcon">✅</div>
+        <div class="verdict-body">
+          <div class="verdict-tag" id="reverseDiffTag">余裕</div>
+          <div class="verdict-title" id="reverseDiffTitle"></div>
+          <div class="verdict-detail" id="reverseDiffDetail"></div>
+        </div>
+      </div>
+      <!-- 内訳 -->
+      <div class="needs-bar-wrap" id="reverseBreakWrap" style="margin-top:12px;display:none;">
+        <div class="needs-breakdown" id="reverseBreakdown"></div>
+      </div>
     </div>
   </div>
 
@@ -376,7 +389,7 @@
   </div>
 
   <!-- MODE C：モンテカルロ -->
-  <div class="mode-panel" id="panel-mc">
+  <div class="mode-panel visible" id="panel-mc">
     <div class="section">
       <div class="section-title">引く回数</div>
       <div class="sim-input-wrap"><input type="number" id="mcWishes" value="0" min="0" placeholder="連数" oninput="onMcWishInput()"><span class="sim-unit">連</span></div>
@@ -495,7 +508,7 @@ updatePatchSchedule();
   });
 });
 
-let currentMode       = 'goal';
+let currentMode       = 'mc';
 let simManualOverride = false;
 let mcManualOverride  = false;
 let mcGuaranteed      = false;
@@ -739,49 +752,66 @@ function copiesNeeded(cur, tgt) {
   return cur === -1 ? tgt + 1 : tgt - cur;
 }
 
-function calcGoal() {
-  const income = calcIncome();
-  if (!income) { alert("期間を正しく設定してください"); return; }
-  const finalTotal   = income.finalTotal;
-  const currentCon   = parseInt(document.getElementById('currentCon').value);
-  const targetCon    = parseInt(document.getElementById('targetCon').value);
-  const weaponCopies = parseInt(document.getElementById('weaponCopies').value);
-  const charPity     = Math.min(89, Math.max(0, parseInt(document.getElementById('charPity').value) || 0));
-  const weapPity     = Math.min(79, Math.max(0, parseInt(document.getElementById('weapPity').value) || 0));
-  const charCopies   = copiesNeeded(currentCon, targetCon);
-  // goalGuaranteed/goalFatePoint を参照
-  const charNeeded   = expectedCharWishes(charCopies, charPity, goalGuaranteed);
-  const weapNeeded   = expectedWeapWishes(weaponCopies, weapPity, goalFatePoint);
-  const totalNeeded  = charNeeded + weapNeeded;
-  const surplus      = finalTotal - totalNeeded;
-  let cls, icon, tag, title, detail;
-  if (totalNeeded === 0) { cls='ok'; icon='🎉'; tag='達成済み'; title='既に目標を達成しています'; detail='現在の凸数・精錬数が既に目標を満たしています。'; }
-  else if (surplus >= totalNeeded * 0.3) { cls='ok'; icon='✅'; tag='余裕'; title=`目標達成できます（+${surplus.toFixed(0)}連 の余裕）`; detail=`必要 <b>${totalNeeded.toFixed(0)}連</b> に対し <b>${Math.ceil(finalTotal)}連</b> 入手見込み。余剰 <b>${surplus.toFixed(1)}連</b>。`; }
-  else if (surplus >= 0) { cls='warn'; icon='⚠️'; tag='ギリギリ'; title='達成ラインですが余裕は少ない'; detail=`必要 <b>${totalNeeded.toFixed(0)}連</b> に対し余剰 <b>${surplus.toFixed(1)}連</b>（${((surplus/totalNeeded)*100).toFixed(0)}%）。`; }
-  else { cls='ng'; icon='❌'; tag='不足'; title=`目標に ${Math.abs(surplus).toFixed(0)}連 不足`; detail=`必要 <b>${totalNeeded.toFixed(0)}連</b> に対し <b>${Math.ceil(finalTotal)}連</b> しか入手できません。`; }
-  const banner = document.getElementById('verdictBanner');
-  banner.className = `verdict-banner ${cls}`;
-  document.getElementById('verdictIcon').textContent  = icon;
-  document.getElementById('verdictTag').textContent   = tag;
-  document.getElementById('verdictTitle').textContent = title;
-  document.getElementById('verdictDetail').innerHTML  = detail;
-  const nw = document.getElementById('needsBarWrap');
-  if (totalNeeded > 0) {
-    nw.style.display = 'block';
-    const pct = Math.min(finalTotal / totalNeeded, 1) * 100;
-    const fill = document.getElementById('barFill');
-    fill.style.width = pct.toFixed(1) + '%';
-    fill.className = `bar-fill ${cls}`;
-    document.getElementById('needsBarNums').innerHTML = `<span style="color:var(--text);font-weight:800">${Math.ceil(finalTotal)}</span><span style="color:var(--muted)"> / 必要 ${totalNeeded.toFixed(0)} 連</span>`;
+function calcReverse() {
+  const currentCon        = parseInt($('currentCon').value);
+  const targetCon         = parseInt($('targetCon').value);
+  const weaponCopies      = parseInt($('weaponCopies').value);
+  const goalCurrentRefine = parseInt($('goalCurrentRefine').value);
+  const charPity  = clamp(parseInt($('charPity').value) || 0, 0, 89);
+  const weapPity  = clamp(parseInt($('weapPity').value) || 0, 0, 79);
+  const charCopies = copiesNeeded(currentCon, targetCon);
+  const weapCopies = Math.max(0, weaponCopies - goalCurrentRefine);
+  const charNeeded = expectedCharWishes(charCopies, charPity, goalGuaranteed);
+  const weapNeeded = expectedWeapWishes(weapCopies, weapPity, goalFatePoint);
+  const totalNeeded = charNeeded + weapNeeded;
+  const neededPrimo = Math.ceil(totalNeeded) * 160;
+
+  // 手持ち連数（invTotalから取得）
+  const heldWishes = parseFloat($('invTotal').textContent) || 0;
+  const diff = heldWishes - totalNeeded;
+  const diffPrimo = Math.round(Math.abs(diff) * 160);
+
+  const resultEl = $('result-goal');
+  if (totalNeeded === 0) {
+    $('reverseNeededWishes').textContent = '0';
+    $('reverseNeededPrimo').textContent  = '既に目標を達成しています';
+    $('reverseDiffBanner').className     = 'verdict-banner ok';
+    $('reverseDiffIcon').textContent     = '🎉';
+    $('reverseDiffTag').textContent      = '達成済み';
+    $('reverseDiffTitle').textContent    = '現在の凸数・精錬数が既に目標を満たしています。';
+    $('reverseDiffDetail').textContent   = '';
+    $('reverseBreakWrap').style.display  = 'none';
+  } else {
+    $('reverseNeededWishes').textContent = Math.ceil(totalNeeded);
+    $('reverseNeededPrimo').textContent  = `原石換算 ${neededPrimo.toLocaleString()}個`;
+
+    let cls, icon, tag, mainTitle, detail;
+    if (diff >= 0) {
+      cls = diff >= totalNeeded * 0.3 ? 'ok' : 'warn';
+      icon = diff >= totalNeeded * 0.3 ? '✅' : '⚠️';
+      tag = diff >= totalNeeded * 0.3 ? '余裕あり' : 'ギリギリ';
+      mainTitle = `手持ちで ${diff.toFixed(1)}連 余裕があります`;
+      detail = `手持ち <b>${heldWishes.toFixed(1)}連</b> に対し必要 <b>${Math.ceil(totalNeeded)}連</b>（原石換算 <b>${(diff * 160).toFixed(0)}個</b> 余剰）`;
+    } else {
+      cls = 'ng'; icon = '❌'; tag = '不足';
+      mainTitle = `あと ${diffPrimo.toLocaleString()}個の原石が必要です`;
+      detail = `手持ち <b>${heldWishes.toFixed(1)}連</b> に対し <b>${Math.abs(diff).toFixed(1)}連</b> 不足（原石換算 <b>${diffPrimo.toLocaleString()}個</b>）`;
+    }
+    $('reverseDiffBanner').className   = `verdict-banner ${cls}`;
+    $('reverseDiffIcon').textContent   = icon;
+    $('reverseDiffTag').textContent    = tag;
+    $('reverseDiffTitle').textContent  = mainTitle;
+    $('reverseDiffDetail').innerHTML   = detail;
+
     let chips = '';
-    if (charCopies>0)   chips += `<span class="needs-chip"><span class="dot" style="background:var(--accent2)"></span>キャラ <b>${charCopies}枚</b>：期待 <b>${charNeeded.toFixed(1)}連</b></span>`;
-    if (weaponCopies>0) chips += `<span class="needs-chip"><span class="dot" style="background:var(--gold)"></span>武器 <b>${weaponCopies}本</b>：期待 <b>${weapNeeded.toFixed(1)}連</b></span>`;
-    document.getElementById('needsBreakdown').innerHTML = chips;
-  } else { nw.style.display = 'none'; }
-  document.getElementById('totalWishes-goal').textContent = Math.ceil(finalTotal);
-  document.getElementById('detailBody-goal').innerHTML = detailHTML(income);
-  document.getElementById('result-goal').style.display = 'block';
-  document.getElementById('result-goal').scrollIntoView({ behavior:'smooth', block:'start' });
+    if (charCopies > 0) chips += `<span class="needs-chip"><span class="dot" style="background:var(--accent2)"></span>キャラ <b>${charCopies}枚</b>：期待 <b>${charNeeded.toFixed(1)}連</b>（<b>${Math.ceil(charNeeded*160).toLocaleString()}原石</b>）</span>`;
+    if (weapCopies > 0) chips += `<span class="needs-chip"><span class="dot" style="background:var(--gold)"></span>武器 <b>${weapCopies}本</b>：期待 <b>${weapNeeded.toFixed(1)}連</b>（<b>${Math.ceil(weapNeeded*160).toLocaleString()}原石</b>）</span>`;
+    $('reverseBreakdown').innerHTML       = chips;
+    $('reverseBreakWrap').style.display   = chips ? 'block' : 'none';
+  }
+
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 function syncSimWishes() {
