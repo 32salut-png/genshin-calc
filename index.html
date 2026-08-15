@@ -45,7 +45,7 @@
     :root {
       --bg: #0d1117; --surface: #161b22; --surface2: #1c2330;
       --border: #30363d; --accent: #58a6ff; --accent2: #bc8cff;
-      --gold: #e3b341; --text: #e6edf3; --muted: #b8c1cc;
+      --gold: #e3b341; --text: #e6edf3; --muted: #8b949e;
       --green: #3fb950; --red: #f85149; --orange: #d29922; --purple: #bc8cff;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -406,8 +406,8 @@
         </div>
         <div class="goal-item mc-goal-item-center"><div class="goal-label">キャラバナー<br>すり抜け</div>
           <div class="mc-btn-group">
-            <div class="guarantee-btn-goal active-g" id="btn-50-50" onclick="setGuarantee(false)" class="guarantee-btn-mc">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
-            <div class="guarantee-btn-goal" id="btn-guaranteed" onclick="setGuarantee(true)" class="guarantee-btn-mc">✅ 確定保証<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
+            <div class="guarantee-btn-goal guarantee-btn-mc active-g" id="btn-50-50" onclick="setGuarantee(false)">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
+            <div class="guarantee-btn-goal guarantee-btn-mc" id="btn-guaranteed" onclick="setGuarantee(true)">✅ 確定保証<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
           </div>
         </div>
       </div>
@@ -419,8 +419,8 @@
         </div>
         <div class="goal-item mc-goal-item-center"><div class="goal-label">命定値</div>
           <div class="mc-btn-group">
-            <div class="guarantee-btn-goal active-g" id="fate-btn-0" onclick="setFatePoint(0)" class="guarantee-btn-mc">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
-            <div class="guarantee-btn-goal" id="fate-btn-1" onclick="setFatePoint(1)" class="guarantee-btn-mc">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で目標武器</span></div>
+            <div class="guarantee-btn-goal guarantee-btn-mc active-g" id="fate-btn-0" onclick="setFatePoint(0)">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
+            <div class="guarantee-btn-goal guarantee-btn-mc" id="fate-btn-1" onclick="setFatePoint(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で目標武器</span></div>
           </div>
         </div>
       </div>
@@ -1166,11 +1166,7 @@ updateInventory();
     </p>
     <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-top:20px;margin-bottom:12px;">計算機の使い方</h2>
     <p style="font-size:0.82em;color:var(--muted);line-height:1.9;">
-      ①「手持ちリソース」に現在の原石・スターライト・ガチャ石の数を入力します。<br>
-      ②「シミュレーション期間」で今日から目標バナー終了日を設定すると、バージョン配布分を含めた入手予定連数が自動計算されます。<br>
-      ③「モンテカルロシミュレーション」では10万回試行による詳細な確率分布と最適な連数配分を確認できます。<br>
-      ④「必要原石逆算」では指定したガチャ目標を達成するために必要なガチャ石、もしくは原石が必要であるのかを期待値から確認できます。<br>
-      ⑤「排出シミュレーター」では設定したガチャ回数でどれだけ★4・★5が引けるかシミュレーションすることができます。
+      ①「手持ちリソース」に現在の原石・スターライト・ガチャ石の数を入力します。<br>②「シミュレーション期間」で今日から目標バナー終了日を設定すると、バージョン配布分を含めた入手予定連数が自動計算されます。<br>③「モンテカルロシミュレーション」では10万回試行による詳細な確率分布と最適な連数配分を確認できます。<br>④「必要原石逆算」では指定したガチャ目標にはどれだけのガチャ石、もしくは原石が必要であるのかを期待値から確認できます。<br>⑤「排出シミュレーター」では設定したガチャ回数でどれだけ★4・★5が引けるかシミュレーションすることができます。
     </p>
     <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-top:20px;margin-bottom:12px;">よくある質問</h2>
     <dl style="font-size:0.82em;color:var(--muted);line-height:1.9;">
