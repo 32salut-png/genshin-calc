@@ -1076,7 +1076,7 @@ function runMonteCarlo() {
       const sortedFcKeys = Object.keys(fbRaw).map(Number).sort((a,b)=>a-b);
       const histLabels  = sortedFcKeys.map(fc => fc === -1 ? '未所持' : `C${fc}`);
       const histPcts    = sortedFcKeys.map(fc => parseFloat(((fbRaw[fc] / charSampleLength) * 100).toFixed(1)));
-      const histColors  = sortedFcKeys.map(fc => fc === -1 ? 'rgba(248,81,73,0.7)' : (fc >= targetCon ? 'rgba(63,185,80,0.7)' : 'rgba(88,166,255,0.5)'));
+      const histColors  = sortedFcKeys.map(fc => fc === targetCon ? 'rgba(227,179,65,0.85)' : 'rgba(63,185,80,0.6)');
       const histCounts  = sortedFcKeys.map(fc => fbRaw[fc]);
       if (distChart) distChart.destroy();
       const distCtx = document.getElementById('mcDistChart').getContext('2d');
