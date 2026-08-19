@@ -1073,11 +1073,12 @@ function runMonteCarlo() {
       });
 
       // distChart（WorkerからはMapではなくオブジェクトで受け取る）
-      const sortedFcKeys = Object.keys(fbRaw).map(Number).sort((a,b)=>a-b);
-      const histLabels  = sortedFcKeys.map(fc => fc === -1 ? '未所持' : `C${fc}`);
-      const histPcts    = sortedFcKeys.map(fc => parseFloat(((fbRaw[fc] / charSampleLength) * 100).toFixed(1)));
-      const histColors  = sortedFcKeys.map(fc => fc === targetCon ? 'rgba(227,179,65,0.85)' : 'rgba(63,185,80,0.6)');
-      const histCounts  = sortedFcKeys.map(fc => fbRaw[fc]);
+      // X軸は常に未所持〜C6まで固定表示
+      const fixedFcKeys = [-1, 0, 1, 2, 3, 4, 5, 6];
+      const histLabels  = fixedFcKeys.map(fc => fc === -1 ? '未所持' : `C${fc}`);
+      const histPcts    = fixedFcKeys.map(fc => fbRaw[fc] ? parseFloat(((fbRaw[fc] / charSampleLength) * 100).toFixed(1)) : 0);
+      const histColors  = fixedFcKeys.map(fc => fc === targetCon ? 'rgba(227,179,65,0.85)' : 'rgba(63,185,80,0.6)');
+      const histCounts  = fixedFcKeys.map(fc => fbRaw[fc] || 0);
       if (distChart) distChart.destroy();
       const distCtx = document.getElementById('mcDistChart').getContext('2d');
       distChart = new Chart(distCtx, {
