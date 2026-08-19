@@ -107,6 +107,7 @@ async function run(p) {
   let weapReachCnt = 0, setReachCnt = 0, charObtainedSum = 0;
   const MEDIAN_CAP = 50000;
   const charSample = [];
+  const weapSample = []; // 武器精錬数の分布用
   const BATCH = Math.max(500, Math.ceil(trials / 100));
   for (let i = 0; i < trials; i += BATCH) {
     if (cancelled) { postMessage({ type: 'cancelled' }); return; }
@@ -119,6 +120,7 @@ async function run(p) {
       if (r.finalCon >= targetCon && (targetRef === 0 || r.refines + currentRef >= targetRef)) setReachCnt++;
       charObtainedSum += r.obtained;
       if (charSample.length < MEDIAN_CAP) charSample.push(r.obtained);
+      if (targetRef > 0 && weapSample.length < MEDIAN_CAP) weapSample.push(r.refines + currentRef);
     }
     postMessage({ type: 'progress', pct: 45 + Math.round((Math.min(i + BATCH, trials) / trials) * 35) });
   }
@@ -138,39 +140,41 @@ async function run(p) {
 
   postMessage({ type: 'progress', pct: 82 });
 
-  // ④ lineChart用シミュレーション
+  // ④ lineChart用シミュレーション（両方あり時のみ）
   const lineTrials = Math.min(trials, Math.max(2000, Math.round(3000000 / totalPulls)));
   const STEPS = 10;
   const lineXLabels = [], lineCharRates = [], lineWeapRates = [], lineSetRates = [];
-  for (let step = 0; step <= STEPS; step++) {
-    if (cancelled) { postMessage({ type: 'cancelled' }); return; }
-    const cp = Math.round((step / STEPS) * totalPulls);
-    const wp = totalPulls - cp;
-    lineXLabels.push(`C${cp}/W${wp}`);
-    let cR = 0, wR = 0, sR = 0;
-    for (let t = 0; t < lineTrials; t++) {
-      const r   = runOneSetTrial(cp, targetRef > 0 ? wp : 0, charPity0, mcGuaranteed, weapPity0, mcFatePoint, currentCon);
-      const cOk = r.finalCon >= targetCon;
-      const wOk = targetRef === 0 ? true : r.refines + currentRef >= targetRef;
-      if (cOk) cR++; if (wOk) wR++; if (cOk && wOk) sR++;
+  if (targetRef > 0 && charPulls > 0 && weapPulls > 0) {
+    for (let step = 0; step <= STEPS; step++) {
+      if (cancelled) { postMessage({ type: 'cancelled' }); return; }
+      const cp = Math.round((step / STEPS) * totalPulls);
+      const wp = totalPulls - cp;
+      lineXLabels.push(`C${cp}/W${wp}`);
+      let cR = 0, wR = 0, sR = 0;
+      for (let t = 0; t < lineTrials; t++) {
+        const r   = runOneSetTrial(cp, wp, charPity0, mcGuaranteed, weapPity0, mcFatePoint, currentCon);
+        const cOk = r.finalCon >= targetCon;
+        const wOk = r.refines + currentRef >= targetRef;
+        if (cOk) cR++; if (wOk) wR++; if (cOk && wOk) sR++;
+      }
+      lineCharRates.push(parseFloat((cR / lineTrials * 100).toFixed(1)));
+      lineWeapRates.push(parseFloat((wR / lineTrials * 100).toFixed(1)));
+      lineSetRates.push(parseFloat((sR / lineTrials * 100).toFixed(1)));
+      postMessage({ type: 'progress', pct: 82 + Math.round(((step + 1) / (STEPS + 1)) * 16) });
     }
-    lineCharRates.push(parseFloat((cR / lineTrials * 100).toFixed(1)));
-    lineWeapRates.push(parseFloat((wR / lineTrials * 100).toFixed(1)));
-    lineSetRates.push(parseFloat((sR / lineTrials * 100).toFixed(1)));
-    postMessage({ type: 'progress', pct: 82 + Math.round(((step + 1) / (STEPS + 1)) * 16) });
   }
 
   postMessage({ type: 'progress', pct: 99 });
 
-  // ⑤ distChart用データ生成
+  // ⑤ キャラ分布データ生成
   const obtainedToFinalCon = (obtained) => {
     if (currentCon === -1) return obtained >= 1 ? Math.min(6, obtained - 1) : -1;
     return Math.min(6, currentCon + obtained);
   };
   let maxObtained = 1;
-for (let i = 0; i < charSample.length; i++) {
-  if (charSample[i] > maxObtained) maxObtained = charSample[i];
-}
+  for (let i = 0; i < charSample.length; i++) {
+    if (charSample[i] > maxObtained) maxObtained = charSample[i];
+  }
   const rawBuckets = new Array(maxObtained + 1).fill(0);
   charSample.forEach(v => { rawBuckets[v]++; });
   const finalConBuckets = {};
@@ -179,13 +183,25 @@ for (let i = 0; i < charSample.length; i++) {
     finalConBuckets[fc] = (finalConBuckets[fc] || 0) + count;
   });
 
+  // ⑥ 武器精錬数の分布データ生成
+  const weapRefineBuckets = {};
+  if (targetRef > 0) {
+    // currentRef〜R5の範囲でバケット
+    for (let r = 0; r <= 5; r++) weapRefineBuckets[r] = 0;
+    weapSample.forEach(v => {
+      const capped = Math.min(5, v);
+      weapRefineBuckets[capped] = (weapRefineBuckets[capped] || 0) + 1;
+    });
+  }
+
   postMessage({
     type: 'result',
     data: {
       conRates, targetReachRate, weapReachRate, setReachRate,
       meanChar, p50Char, charPulls, weapPulls, totalPulls,
       lineXLabels, lineCharRates, lineWeapRates, lineSetRates,
-      finalConBuckets, charSampleLength: charSample.length
+      finalConBuckets, charSampleLength: charSample.length,
+      weapRefineBuckets, weapSampleLength: weapSample.length
     }
   });
 }
