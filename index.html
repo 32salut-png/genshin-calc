@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-P3G0V589F1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-P3G0V589F1');
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="Eo-Pl7oJFDLLMu_5jAPJCJL6spxdR-7pS3lCJSYt924" />
+  <title>【原神】 ガチャ確率・原石計算機 | 天井・完凸シミュレーター</title>
+  <meta name="description" content="原神のガチャ確率・天井・原石を計算できるツール。手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井をシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
+  <meta name="keywords" content="原神, ガチャ確率, ガチャ計算, 原石計算, ガチャシミュレーター, 天井, 完凸, 期待値, 排出率, 原神ガチャ">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="【原神】 ガチャ確率・原石計算機 | 天井・完凸シミュレーター">
+  <meta property="og:description" content="原神のガチャ確率・天井・原石を計算できるツール。手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井をシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://32salut-png.github.io/genshin-calc/">
+  <meta property="og:image" content="https://32salut-png.github.io/genshin-calc/favicon.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="【原神】 ガチャ確率・原石計算機 | 天井・完凸シミュレーター">
+  <meta name="twitter:description" content="原神のガチャ確率・天井・原石を計算できるツール。手持ちの原石と狙う凸数を入力するだけ！排出率・完凸期待値・仮天井をシミュレーションで精密計算。次のアプデまでの配布原石も自動計算。">
+  <meta name="twitter:image" content="https://32salut-png.github.io/genshin-calc/favicon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="sitemap" type="application/xml" href="/genshin-calc/sitemap.xml">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "原神ガチャ計算機",
+    "url": "https://32salut-png.github.io/genshin-calc/",
+    "operatingSystem": "All",
+    "applicationCategory": "GameApplication",
+    "description": "原神のガチャ確率や目標達成に必要な原石数をモンテカルロシミュレーションで精密計算するツール。"
+  }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --surface2: #1c2330;
+      --border: #30363d; --accent: #58a6ff; --accent2: #bc8cff;
+      --gold: #e3b341; --text: #e6edf3; --muted: #8b949e;
+      --green: #3fb950; --red: #f85149; --orange: #d29922; --purple: #bc8cff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 16px 80px; }
+    .wrapper { max-width: 660px; margin: 0 auto; }
+    h1 { text-align: center; font-size: 1.3em; font-weight: 700; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+
+    .mode-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+    .mode-tab { padding: 8px 4px; text-align: center; border-radius: 9px; cursor: pointer; font-size: 0.78em; font-weight: 700; color: var(--muted); transition: background 0.2s, color 0.2s; user-select: none; line-height: 1.4; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .mode-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .mode-tab .tab-icon { font-size: 1.1em; display: block; margin-bottom: 3px; }
+    .mode-tab.active.tab-goal { border-color: var(--accent2); color: var(--accent2); }
+    .mode-tab.active.tab-sim  { border-color: var(--gold); color: var(--gold); }
+    .mode-tab.active.tab-mc   { border-color: var(--green); color: var(--green); }
+
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .section-title { font-size: 0.75em; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    .inventory-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .inv-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 10px; text-align: center; transition: border-color 0.2s; }
+    .inv-item:focus-within { border-color: var(--accent); }
+    .inv-icon { font-size: 1.4em; margin-bottom: 4px; }
+    .inv-label { font-size: 0.7em; color: var(--muted); margin-bottom: 8px; line-height: 1.3; }
+    .inv-item input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 1.1em; font-weight: 700; text-align: center; padding: 4px 0; outline: none; -moz-appearance: textfield; }
+    .inv-item input::-webkit-outer-spin-button, .inv-item input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .inv-converted { font-size: 0.68em; color: var(--accent2); margin-top: 6px; min-height: 1em; font-weight: 600; }
+    .inv-total-row { margin-top: 12px; background: var(--surface2); border: 1px solid var(--accent); border-radius: 8px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .inv-total-label { font-size: 0.8em; color: var(--muted); }
+    .inv-total-val { font-size: 1.3em; font-weight: 800; color: var(--accent); }
+    .inv-total-unit { font-size: 0.75em; color: var(--muted); margin-left: 4px; }
+
+    .date-row { display: flex; align-items: center; gap: 10px; }
+    .date-row input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 0.9em; outline: none; transition: border-color 0.2s; }
+    .date-row input:focus { border-color: var(--accent); }
+    .date-sep { color: var(--muted); font-size: 0.85em; flex-shrink: 0; }
+
+    .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .toggle-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .toggle-item.active { border-color: var(--accent2); background: rgba(188,140,255,0.08); }
+    .toggle-item input { display: none; }
+    .toggle-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; transition: background 0.2s, border-color 0.2s; }
+    .toggle-item.active .toggle-dot { background: var(--accent2); border-color: var(--accent2); }
+    .toggle-text { font-size: 0.85em; line-height: 1.3; }
+
+    .mode-panel { display: none; }
+    .mode-panel.visible { display: block; }
+
+    .goal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .goal-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 10px; text-align: center; }
+    .goal-item:focus-within { border-color: var(--accent2); }
+    .goal-label { font-size: 0.7em; color: var(--muted); margin-bottom: 8px; line-height: 1.4; }
+    .goal-item select { width: 100%; background: var(--surface); border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 1em; font-weight: 700; text-align: center; padding: 4px 0; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
+    .goal-item input[type=number] { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 1.1em; font-weight: 700; text-align: center; padding: 4px 0; outline: none; -moz-appearance: textfield; }
+    .goal-item input::-webkit-outer-spin-button, .goal-item input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .pity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pity-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .pity-item:focus-within { border-color: var(--gold); }
+    .pity-label { font-size: 0.78em; color: var(--muted); line-height: 1.35; }
+    .pity-item input { width: 56px; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--gold); font-size: 1.1em; font-weight: 800; text-align: center; padding: 4px 0; outline: none; -moz-appearance: textfield; }
+    .pity-item input::-webkit-outer-spin-button, .pity-item input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .pity-hint { margin-top: 10px; font-size: 0.72em; color: var(--muted); line-height: 1.6; padding: 8px 12px; background: var(--surface2); border-radius: 6px; border-left: 2px solid var(--gold); }
+
+    /* 確定保証トグル（目標達成チェック用） */
+    .guarantee-row-goal { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; margin-bottom: 4px; }
+    .guarantee-btn-goal { padding: 10px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; text-align: center; font-size: 0.82em; font-weight: 700; color: var(--muted); transition: all 0.2s; user-select: none; line-height: 1.4; }
+    .guarantee-btn-goal.active-g { border-color: var(--green); color: var(--green); background: rgba(63,185,80,0.08); }
+    .guarantee-btn-goal.active-r { border-color: var(--accent2); color: var(--accent2); background: rgba(188,140,255,0.08); }
+
+    .sim-input-wrap { display: flex; align-items: center; gap: 12px; max-width: 100%; box-sizing: border-box; }
+    .sim-input-wrap input { flex: 1; min-width: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 12px 16px; font-size: 1.4em; font-weight: 900; text-align: center; outline: none; transition: border-color 0.2s; -moz-appearance: textfield; }
+    .sim-input-wrap input::-webkit-outer-spin-button, .sim-input-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .sim-input-wrap input:focus { border-color: var(--gold); }
+    .sim-unit { font-size: 0.9em; color: var(--muted); white-space: nowrap; }
+    .sim-pity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+
+    .mc-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .mc-form-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 12px; text-align: center; }
+    .mc-form-item:focus-within { border-color: var(--green); }
+    .mc-form-label { font-size: 0.72em; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+    .mc-form-item input[type=number], .mc-form-item select { width: 100%; background: var(--surface); border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 1.05em; font-weight: 700; text-align: center; padding: 5px 0; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: textfield; }
+    .mc-form-item input::-webkit-outer-spin-button, .mc-form-item input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .guarantee-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .guarantee-btn { padding: 12px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; text-align: center; font-size: 0.82em; font-weight: 700; color: var(--muted); transition: all 0.2s; user-select: none; line-height: 1.4; }
+    .guarantee-btn.active-g { border-color: var(--green); color: var(--green); background: rgba(63,185,80,0.08); }
+    .guarantee-btn.active-r { border-color: var(--accent2); color: var(--accent2); background: rgba(188,140,255,0.08); }
+
+    .fate-toggle-btn { display:none; }
+
+    .trials-note { font-size: 0.72em; color: var(--muted); padding: 8px 12px; background: var(--surface2); border-radius: 6px; border-left: 2px solid var(--green); margin-top: 4px; line-height: 1.6; }
+
+    .calc-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1em; font-weight: 800; letter-spacing: 0.05em; cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-bottom: 16px; }
+    .calc-btn:active { transform: scale(0.98); opacity: 0.85; }
+    .calc-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    #calcBtn-goal { background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%); color: white; }
+    #calcBtn-sim  { background: linear-gradient(135deg, #e3b341 0%, #d29922 100%); color: #0d1117; }
+    #calcBtn-mc   { background: linear-gradient(135deg, #3fb950 0%, #2ea043 100%); color: white; }
+
+    .result-block { display: none; }
+
+    .verdict-banner { border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 14px; }
+    .verdict-banner.ok   { background: rgba(63,185,80,0.1);  border: 1px solid var(--green); }
+    .verdict-banner.warn { background: rgba(210,153,34,0.1); border: 1px solid var(--orange); }
+    .verdict-banner.ng   { background: rgba(248,81,73,0.1);  border: 1px solid var(--red); }
+    .verdict-icon { font-size: 2em; flex-shrink: 0; line-height: 1; }
+    .verdict-tag { font-size: 0.68em; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .verdict-banner.ok   .verdict-tag { color: var(--green); }
+    .verdict-banner.warn .verdict-tag { color: var(--orange); }
+    .verdict-banner.ng   .verdict-tag { color: var(--red); }
+    .verdict-title { font-size: 1.1em; font-weight: 800; margin-bottom: 6px; }
+    .verdict-detail { font-size: 0.82em; color: var(--muted); line-height: 1.6; }
+    .verdict-detail b { color: var(--text); }
+
+    .needs-bar-wrap { border-radius: 10px; background: var(--surface); border: 1px solid var(--border); padding: 16px 20px; margin-bottom: 16px; }
+    .needs-bar-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+    .needs-bar-title { font-size: 0.78em; color: var(--muted); }
+    .bar-track { height: 10px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+    .bar-fill.ok   { background: linear-gradient(90deg, var(--green), #56d364); }
+    .bar-fill.warn { background: linear-gradient(90deg, var(--orange), #e3b341); }
+    .bar-fill.ng   { background: linear-gradient(90deg, var(--red), #ff7b72); }
+    .needs-breakdown { margin-top: 10px; display: flex; gap: 16px; flex-wrap: wrap; }
+    .needs-chip { font-size: 0.74em; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+    .needs-chip b { color: var(--text); font-weight: 700; }
+    .needs-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    .result-total { background: linear-gradient(135deg, rgba(88,166,255,0.12) 0%, rgba(188,140,255,0.12) 100%); border: 1px solid var(--accent); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px; }
+    .result-label { font-size: 0.8em; color: var(--muted); margin-bottom: 6px; }
+    .result-num { font-size: 3em; font-weight: 900; color: var(--accent); line-height: 1; }
+    .result-unit { font-size: 0.9em; color: var(--muted); margin-top: 4px; }
+    .result-sub { font-size: 0.72em; color: var(--muted); margin-top: 8px; }
+
+    .sim-result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .sim-card { border-radius: 12px; padding: 18px 16px; text-align: center; }
+    .sim-card.five { background: linear-gradient(135deg, rgba(227,179,65,0.15), rgba(227,179,65,0.05)); border: 1px solid var(--gold); }
+    .sim-card.four { background: linear-gradient(135deg, rgba(188,140,255,0.15), rgba(188,140,255,0.05)); border: 1px solid var(--accent2); }
+    .sim-card-icon { font-size: 1.6em; margin-bottom: 6px; }
+    .sim-card-label { font-size: 0.72em; color: var(--muted); margin-bottom: 10px; line-height: 1.4; }
+    .sim-card-num { font-size: 2.4em; font-weight: 900; line-height: 1; }
+    .sim-card.five .sim-card-num { color: var(--gold); }
+    .sim-card.four .sim-card-num { color: var(--accent2); }
+    .sim-card-unit { font-size: 0.8em; color: var(--muted); margin-top: 4px; }
+    .sim-card-sub { font-size: 0.7em; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+    .sim-detail-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .sim-bar-item { margin-bottom: 14px; }
+    .sim-bar-item:last-child { margin-bottom: 0; }
+    .sim-bar-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .sim-bar-name { font-size: 0.8em; color: var(--text); font-weight: 600; }
+    .sim-bar-val  { font-size: 0.78em; font-weight: 700; }
+    .sim-bar-track { height: 7px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+    .sim-bar-fill  { height: 100%; border-radius: 99px; }
+    .sim-bar-fill.gold   { background: linear-gradient(90deg, #b8860b, var(--gold)); }
+    .sim-bar-fill.purple { background: linear-gradient(90deg, #7b4fc8, var(--accent2)); }
+    .sim-note { font-size: 0.72em; color: var(--muted); margin-top: 12px; line-height: 1.6; padding: 8px 12px; background: var(--surface2); border-radius: 6px; border-left: 2px solid var(--accent); }
+
+    .mc-progress-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; display: none; }
+    .mc-progress-label { font-size: 0.78em; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .mc-progress-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .mc-progress-fill { height: 100%; background: linear-gradient(90deg, #2ea043, #3fb950); border-radius: 99px; transition: width 0.1s; width: 0%; }
+
+    .set-achieve-banner { border-radius: 14px; padding: 20px 22px; margin-bottom: 16px; border: 2px solid var(--green); background: rgba(63,185,80,0.08); }
+    .set-achieve-banner.warn { border-color: var(--orange); background: rgba(210,153,34,0.08); }
+    .set-achieve-banner.ng   { border-color: var(--red); background: rgba(248,81,73,0.08); }
+    .set-achieve-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .set-achieve-icon { font-size: 2.4em; line-height: 1; }
+    .set-achieve-tag { font-size: 0.68em; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 4px; }
+    .set-achieve-banner.warn .set-achieve-tag { color: var(--orange); }
+    .set-achieve-banner.ng   .set-achieve-tag { color: var(--red); }
+    .set-achieve-rate { font-size: 2.8em; font-weight: 900; line-height: 1; color: var(--green); }
+    .set-achieve-banner.warn .set-achieve-rate { color: var(--orange); }
+    .set-achieve-banner.ng   .set-achieve-rate { color: var(--red); }
+    .set-sub-rates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .set-sub-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+    .set-sub-label { font-size: 0.7em; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
+    .set-sub-val { font-size: 1.5em; font-weight: 900; }
+    .set-alloc-note { font-size: 0.72em; color: var(--muted); margin-top: 10px; padding: 8px 12px; background: var(--surface2); border-radius: 6px; border-left: 2px solid var(--border); line-height: 1.6; }
+
+    .mc-rate-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+    @media (max-width: 480px) { .mc-rate-cards { grid-template-columns: repeat(2, 1fr); } }
+    .mc-rate-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 10px; text-align: center; transition: border-color 0.3s; }
+    .mc-rate-card.highlight { border-color: var(--green); }
+    .mc-rate-card-label { font-size: 0.72em; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .mc-rate-card-pct { font-size: 1.8em; font-weight: 900; line-height: 1; background: linear-gradient(135deg, #3fb950, #56d364); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .mc-rate-card-sub { font-size: 0.68em; color: var(--muted); margin-top: 5px; }
+
+    .mc-chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .mc-chart-title { font-size: 0.78em; color: var(--muted); margin-bottom: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .mc-chart-canvas { position: relative; height: 260px; }
+
+    .mc-dist-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+
+    .mc-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .mc-stat-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 10px; text-align: center; }
+    .mc-stat-label { font-size: 0.7em; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
+    .mc-stat-val { font-size: 1.5em; font-weight: 900; color: var(--text); }
+    .mc-stat-unit { font-size: 0.72em; color: var(--muted); }
+
+    .detail-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    .detail-table th { color: var(--muted); font-weight: 600; font-size: 0.75em; letter-spacing: 0.05em; text-transform: uppercase; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+    .detail-table td { padding: 9px 10px; border-bottom: 1px solid rgba(48,54,61,0.6); }
+    .detail-table tr:last-child td { border-bottom: none; }
+    .cat { font-weight: 700; color: var(--text); }
+    .desc { color: var(--muted); font-size: 0.9em; }
+    .val { font-weight: 700; color: var(--green); text-align: right; font-variant-numeric: tabular-nums; }
+    .val.special { color: var(--gold); }
+    tr.cashback { background: rgba(227,179,65,0.06); }
+    /* インラインCSS整理用クラス */
+    .mc-banner-sub-label { font-size: 0.75em; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .mc-btn-group { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .mc-col-group { display: flex; flex-direction: column; gap: 10px; }
+    .guarantee-btn-mc { padding: 7px 4px; font-size: 0.76em; }
+    .mc-goal-item-center { display: flex; flex-direction: column; justify-content: center; }
+    .mc-select-styled { color: var(--text); font-size: 1em; font-weight: 700; }
+    .goal-label-accent { color: #58a6ff; font-size: 0.85em; }
+    .goal-label-gold { color: var(--gold); font-size: 0.85em; }
+    .goal-label-accent2 { color: var(--accent2); font-size: 0.85em; }
+    .needs-bar-nums { font-size: 0.82em; font-weight: 700; }
+    .sim-note { margin-top: 10px; font-size: 0.75em; color: var(--muted); }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <h1>✦ 原神 ガチャリソース計算機 Pro</h1>
+
+  <div class="mode-tabs">
+    <div class="mode-tab tab-mc active" onclick="switchMode('mc')"><span class="tab-icon">📊</span>モンテカルロ<br>確率</div>
+    <div class="mode-tab tab-goal"      onclick="switchMode('goal')"><span class="tab-icon">🔢</span>必要原石<br>逆算</div>
+    <div class="mode-tab tab-sim"       onclick="switchMode('sim')"><span class="tab-icon">🎲</span>排出<br>シミュレーション</div>
+  </div>
+
+  <!-- 共通：所持物 -->
+  <div class="section">
+    <div class="section-title">現在の所持物</div>
+    <div class="inventory-grid">
+      <div class="inv-item"><div class="inv-icon">💎</div><div class="inv-label">原石</div><input type="number" id="primogems" aria-label="原石" value="0" min="0" oninput="updateInventory()"><div class="inv-converted" id="conv-primo"></div></div>
+      <div class="inv-item"><div class="inv-icon">⭐</div><div class="inv-label">スターライト</div><input type="number" id="starglitter" aria-label="スターライト" value="0" min="0" oninput="updateInventory()"><div class="inv-converted" id="conv-star"></div></div>
+      <div class="inv-item"><div class="inv-icon">🎫</div><div class="inv-label">ガチャ石</div><input type="number" id="fates" aria-label="ガチャ石" value="0" min="0" oninput="updateInventory()"><div class="inv-converted" id="conv-fates"></div></div>
+    </div>
+    <div class="inv-total-row">
+      <span class="inv-total-label">所持合計（ガチャ換算）</span>
+      <span><span class="inv-total-val" id="invTotal">0.00</span><span class="inv-total-unit">連</span></span>
+    </div>
+  </div>
+
+  <div class="section" id="section-period">
+    <div class="section-title">シミュレーション期間</div>
+    <div class="date-row"><input type="date" id="startDate" aria-label="開始日"><span class="date-sep">〜</span><input type="date" id="endDate" aria-label="終了日"></div>
+    <div id="patchSchedule" style="margin-top:10px;font-size:0.72em;color:var(--muted);line-height:2;"></div>
+  </div>
+  <div class="section" id="section-billing">
+    <div class="section-title">課金オプション</div>
+    <div class="toggle-grid">
+      <label class="toggle-item" id="lbl-blessing"><input type="checkbox" id="isBlessing"><div class="toggle-dot"></div><div class="toggle-text">🌙 空月の祝福</div></label>
+      <label class="toggle-item" id="lbl-bp"><input type="checkbox" id="isBP"><div class="toggle-dot"></div><div class="toggle-text">📖 天空紀行</div></label>
+    </div>
+  </div>
+
+  <!-- MODE A：必要原石 逆算 -->
+  <div class="mode-panel" id="panel-goal">
+    <div class="section">
+      <div class="section-title">目標設定</div>
+      <div class="goal-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="goal-item"><div class="goal-label">現在の凸数<br><span class="goal-label-accent">（未所持=-1）</span></div><select id="currentCon" aria-label="現在の凸数"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
+        <div class="goal-item"><div class="goal-label">目標凸数</div><select id="targetCon" aria-label="目標凸数"><option value="0" selected>C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option><option value="6">C6</option></select></div>
+        <div class="goal-item"><div class="goal-label">現在の精錬数<br><span class="goal-label-gold">武器バナー</span></div><select id="goalCurrentRefine" aria-label="現在の精錬数"><option value="0">R0（未所持）</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
+        <div class="goal-item"><div class="goal-label">目標精錬数<br><span class="goal-label-gold">武器バナー</span></div><select id="weaponCopies" aria-label="目標精錬数"><option value="0">武器なし</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
+      </div>
+      <div class="pity-row">
+        <div class="pity-item"><div class="pity-label">キャラバナー<br>すでに引いた数</div><input type="number" id="charPity" aria-label="キャラバナー すでに引いた数" value="0" min="0" max="89"></div>
+        <div class="pity-item"><div class="pity-label">武器バナー<br>すでに引いた数</div><input type="number" id="weapPity" aria-label="武器バナー すでに引いた数" value="0" min="0" max="79"></div>
+      </div>
+      <!-- キャラバナー：すり抜け保証トグル -->
+      <div class="mc-banner-group" style="margin-top:14px;">
+        <div class="mc-banner-sub-label">キャラバナー：すり抜け</div>
+        <div class="guarantee-row-goal">
+          <div class="guarantee-btn-goal active-g" id="goal-btn-50-50" onclick="setGoalGuarantee(false)">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
+          <div class="guarantee-btn-goal" id="goal-btn-guaranteed" onclick="setGoalGuarantee(true)">✅ 確定保証あり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
+        </div>
+      </div>
+      <!-- 武器バナー：命定値トグル -->
+      <div class="mc-banner-group" style="margin-top:12px;">
+        <div class="mc-banner-sub-label">武器バナー：命定値</div>
+        <div class="guarantee-row-goal">
+          <div class="guarantee-btn-goal active-g" id="goal-fate-0" onclick="setGoalFate(0)">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
+          <div class="guarantee-btn-goal" id="goal-fate-1" onclick="setGoalFate(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で武器</span></div>
+        </div>
+      </div>
+      <div class="pity-hint">⚡ 仮天井考慮：キャラ74連〜、武器63連〜以降の確率上昇を加味した<b>期待連数</b>で計算。<br>武器バナーは37.5/62.5システム（命定値）に基づき期待連数を算出。</div>
+    </div>
+    <button class="calc-btn" id="calcBtn-goal" onclick="calcReverse()">必要原石を逆算 →</button>
+    <div class="result-block" id="result-goal" style="display:none;">
+      <!-- メイン結果 -->
+      <div class="result-total" id="reverseMainResult">
+        <div class="result-label">目標達成に必要な連数（期待値）</div>
+        <div class="result-num" id="reverseNeededWishes">0</div>
+        <div class="result-unit">連</div>
+        <div class="result-sub" id="reverseNeededPrimo"></div>
+      </div>
+      <!-- 手持ちとの差分 -->
+      <div id="reverseDiffBanner" class="verdict-banner ok" style="margin-top:12px;">
+        <div class="verdict-icon" id="reverseDiffIcon">✅</div>
+        <div class="verdict-body">
+          <div class="verdict-tag" id="reverseDiffTag">余裕</div>
+          <div class="verdict-title" id="reverseDiffTitle"></div>
+          <div class="verdict-detail" id="reverseDiffDetail"></div>
+        </div>
+      </div>
+      <!-- 内訳 -->
+      <div class="needs-bar-wrap" id="reverseBreakWrap" style="margin-top:12px;display:none;">
+        <div class="needs-breakdown" id="reverseBreakdown"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODE B：排出シミュレーター -->
+  <div class="mode-panel" id="panel-sim">
+    <div class="section">
+      <div class="section-title">引く回数を指定</div>
+      <div class="sim-input-wrap"><input type="number" id="simWishes" value="0" min="0" placeholder="連数" oninput="onSimWishInput()"><span class="sim-unit">連</span></div>
+      <div class="sim-note">期間・課金設定を変えると自動で連数が変わります。直接入力で上書きも可。</div>
+      <div class="sim-pity-row">
+        <div class="pity-item"><div class="pity-label">キャラバナー<br>すでに引いた数</div><input type="number" id="simCharPity" value="0" min="0" max="89"></div>
+        <div class="pity-item"><div class="pity-label">武器バナー<br>すでに引いた数</div><input type="number" id="simWeapPity" value="0" min="0" max="79"></div>
+      </div>
+    </div>
+    <button class="calc-btn" id="calcBtn-sim" onclick="calcSim()">排出数をシミュレート →</button>
+    <div class="result-block" id="result-sim">
+      <div class="sim-result-grid">
+        <div class="sim-card five"><div class="sim-card-icon">⭐⭐⭐⭐⭐</div><div class="sim-card-label">キャラバナー<br>★5 期待数（目標キャラ）</div><div class="sim-card-num" id="sim-char5">0</div><div class="sim-card-unit">体</div><div class="sim-card-sub" id="sim-char5-sub"></div></div>
+        <div class="sim-card four"><div class="sim-card-icon">⭐⭐⭐⭐</div><div class="sim-card-label">キャラバナー<br>★4 期待数</div><div class="sim-card-num" id="sim-char4">0</div><div class="sim-card-unit">体/武器</div><div class="sim-card-sub" id="sim-char4-sub"></div></div>
+        <div class="sim-card five" style="border-color:#c0a060"><div class="sim-card-icon">🗡️</div><div class="sim-card-label">武器バナー<br>★5 期待数（目標武器）</div><div class="sim-card-num" id="sim-weap5" style="color:#c0a060">0</div><div class="sim-card-unit">本</div><div class="sim-card-sub" id="sim-weap5-sub"></div></div>
+        <div class="sim-card four" style="border-color:#8877cc"><div class="sim-card-icon">⚔️</div><div class="sim-card-label">武器バナー<br>★4 期待数</div><div class="sim-card-num" id="sim-weap4" style="color:#8877cc">0</div><div class="sim-card-unit">本</div><div class="sim-card-sub" id="sim-weap4-sub"></div></div>
+      </div>
+      <div class="sim-detail-section"><div class="section-title">引いた連数の配分イメージ</div><div id="simBars"></div><div class="sim-note" id="simNote"></div></div>
+      <div class="result-total" style="background:linear-gradient(135deg,rgba(227,179,65,0.12),rgba(210,153,34,0.08));border-color:var(--gold);"><div class="result-label">シミュレーション対象連数</div><div class="result-num" id="totalWishes-sim" style="color:var(--gold);">0</div><div class="result-unit">連</div><div class="result-sub">所持リソース＋期間収入の合計</div></div>
+      <div class="section"><div class="section-title">収入内訳</div><table class="detail-table"><thead><tr><th>項目</th><th>詳細</th><th style="text-align:right">換算(連)</th></tr></thead><tbody id="detailBody-sim"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- MODE C：モンテカルロ -->
+  <div class="mode-panel visible" id="panel-mc">
+    <div class="section">
+      <div class="section-title">引く回数</div>
+      <div class="sim-input-wrap"><input type="number" id="mcWishes" value="0" min="0" placeholder="連数" oninput="onMcWishInput()"><span class="sim-unit">連</span></div>
+      <div class="sim-note">期間・課金設定と連動。直接入力で上書き可。</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">バナー状態</div>
+      <!-- キャラ：左に凸数+pityを縦積み、右にすり抜けボタン -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="mc-col-group">
+          <div class="goal-item"><div class="goal-label">現在の凸数<br><span class="goal-label-accent2">（未所持=-1）</span></div><select id="mcCurrentCon" aria-label="現在の凸数"><option value="-1">未所持</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option></select></div>
+          <div class="goal-item"><div class="goal-label">キャラ<br>すでに引いた数<br><span class="goal-label-gold">0〜89</span></div><input type="number" id="mcCharPity" aria-label="キャラ すでに引いた数" value="0" min="0" max="89"></div>
+        </div>
+        <div class="goal-item mc-goal-item-center"><div class="goal-label">キャラバナー<br>すり抜け</div>
+          <div class="mc-btn-group">
+            <div class="guarantee-btn-goal guarantee-btn-mc active-g" id="btn-50-50" onclick="setGuarantee(false)">🎲 すり抜けあり<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">50%でピックアップ</span></div>
+            <div class="guarantee-btn-goal guarantee-btn-mc" id="btn-guaranteed" onclick="setGuarantee(true)">✅ 確定保証<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">ピックアップ確定</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- 武器：左に精錬数+pityを縦積み、右に命定値ボタン -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="mc-col-group">
+          <div class="goal-item"><div class="goal-label">現在の精錬数<br><span class="goal-label-gold">武器バナー</span></div><select id="mcCurrentRefine" aria-label="現在の精錬数"><option value="0">R0（未所持）</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select></div>
+          <div class="goal-item"><div class="goal-label">武器<br>すでに引いた数<br><span class="goal-label-gold">0〜79</span></div><input type="number" id="mcWeapPity" aria-label="武器 すでに引いた数" value="0" min="0" max="79"></div>
+        </div>
+        <div class="goal-item mc-goal-item-center"><div class="goal-label">命定値</div>
+          <div class="mc-btn-group">
+            <div class="guarantee-btn-goal guarantee-btn-mc active-g" id="fate-btn-0" onclick="setFatePoint(0)">命定値 0<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">37.5%で目標武器</span></div>
+            <div class="guarantee-btn-goal guarantee-btn-mc" id="fate-btn-1" onclick="setFatePoint(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で目標武器</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">目標設定</div>
+      <div class="mc-form-grid">
+        <div class="mc-form-item"><div class="mc-form-label">目標凸数</div><select id="mcTargetCon" aria-label="目標凸数" class="mc-select-styled"><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option><option value="6">C6</option></select></div>
+        <div class="mc-form-item"><div class="mc-form-label">目標精錬数</div><select id="mcTargetRefine" aria-label="目標精錬数" class="mc-select-styled"><option value="0">武器なし</option><option value="1">R1</option><option value="2">R2</option><option value="3">R3</option><option value="4">R4</option><option value="5">R5</option></select><input type="hidden" id="mcTrials" value="100000"></div>
+      </div>
+      
+    </div>
+
+    <button class="calc-btn" id="calcBtn-mc" onclick="runMonteCarlo()">モンテカルロ シミュレーション →</button>
+    <button id="cancelBtn-mc" onclick="cancelMonteCarlo()" style="display:none;margin-top:8px;width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:0.85em;cursor:pointer;">✕ キャンセル</button>
+
+    <div class="mc-progress-wrap" id="mcProgressWrap">
+      <div class="mc-progress-label"><span>シミュレーション実行中...</span><span id="mcProgressPct">0%</span></div>
+      <div class="mc-progress-bar"><div class="mc-progress-fill" id="mcProgressFill"></div></div>
+    </div>
+
+    <div class="result-block" id="result-mc">
+      <div id="setAchieveBanner"></div>
+      <div class="mc-rate-cards" id="mcRateCards"></div>
+      <div class="mc-stats-grid" id="mcStatsGrid"></div>
+      <div class="mc-chart-wrap">
+        <div class="mc-chart-title">配分比ごとの達成率（同一リソースで最適配分を探す）</div>
+        <div class="mc-chart-canvas"><canvas id="mcLineChart"></canvas></div>
+      </div>
+      <div class="mc-dist-wrap">
+        <div class="mc-chart-title">キャラ取得数の分布（試行結果）</div>
+        <div class="mc-chart-canvas"><canvas id="mcDistChart"></canvas></div>
+      </div>
+      <div class="section"><div class="section-title">収入内訳</div><table class="detail-table"><thead><tr><th>項目</th><th>詳細</th><th style="text-align:right">換算(連)</th></tr></thead><tbody id="detailBody-mc"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ユーティリティ
+const $ = id => document.getElementById(id);
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+document.getElementById('startDate').valueAsDate = new Date();
+
+function updatePatchSchedule() {
+  const BASE_VER = new Date('2026-07-01');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // 今日以降の最初のパッチ日を基準に3回分取得
+  const patches = [];
+  for (let d = new Date(BASE_VER); patches.length < 3; d.setDate(d.getDate() + 42)) {
+    const patch = new Date(d);
+    if (patch >= today) patches.push(new Date(patch));
+  }
+  // BASE_VERより前の期間もカバーするため逆方向も探索
+  if (patches.length === 0) {
+    for (let d = new Date(BASE_VER); ; d.setDate(d.getDate() - 42)) {
+      const patch = new Date(d);
+      if (patch >= today) { patches.unshift(new Date(patch)); break; }
+    }
+  }
+
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}(${['日','月','火','水','木','金','土'][d.getDay()]})`;
+
+  let html = '';
+  for (let i = 0; i < Math.min(patches.length, 3); i++) {
+    const patch = patches[i];
+    const mid   = new Date(patch); mid.setDate(mid.getDate() + 20);
+    html += `<span style="color:var(--accent2)">🔴 アプデ ${fmt(patch)}</span>　<span style="color:var(--gold)">🔵 前半後半変更 ${fmt(mid)}</span>`;
+    if (i < 2) html += '<br>';
+  }
+  document.getElementById('patchSchedule').innerHTML = html;
+}
+updatePatchSchedule();
+
+// トグルボタンのイベント（changeイベントで二重登録を防ぐ）
+['blessing','bp'].forEach(key => {
+  const lbl = document.getElementById('lbl-' + key);
+  const cb  = document.getElementById(key === 'blessing' ? 'isBlessing' : 'isBP');
+  cb.addEventListener('change', () => {
+    lbl.classList.toggle('active', cb.checked);
+  });
+});
+
+let currentMode       = 'mc';
+let simManualOverride = false;
+let mcManualOverride  = false;
+let mcGuaranteed      = false;
+let mcFatePoint       = 0;
+// 目標達成チェック用の保証状態
+let goalGuaranteed    = false;
+let goalFatePoint     = 0;
+let lineChart         = null;
+let distChart         = null;
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab-' + mode).classList.add('active');
+  document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('visible'));
+  document.getElementById('panel-' + mode).classList.add('visible');
+  // 逆算タブでは期間・課金を非表示
+  const hide = mode === 'goal';
+  $('section-period').style.display  = hide ? 'none' : '';
+  $('section-billing').style.display = hide ? 'none' : '';
+  if (mode === 'sim') syncSimWishes();
+  if (mode === 'mc')  syncMcWishes();
+}
+
+function setGuarantee(val) {
+  mcGuaranteed = val;
+  document.getElementById('btn-50-50').className     = 'guarantee-btn-goal' + (!val ? ' active-g' : '');
+  document.getElementById('btn-guaranteed').className = 'guarantee-btn-goal' + (val ? ' active-r' : '');
+}
+
+function setFatePoint(val) {
+  mcFatePoint = val === 1 ? 1 : 0;
+  document.getElementById('fate-btn-0').className = 'guarantee-btn-goal' + (mcFatePoint === 0 ? ' active-g' : '');
+  document.getElementById('fate-btn-1').className = 'guarantee-btn-goal' + (mcFatePoint === 1 ? ' active-r' : '');
+}
+
+// 目標達成チェック用トグル
+function setGoalGuarantee(val) {
+  goalGuaranteed = val;
+  document.getElementById('goal-btn-50-50').className    = 'guarantee-btn-goal' + (!val ? ' active-g' : '');
+  document.getElementById('goal-btn-guaranteed').className = 'guarantee-btn-goal' + (val ? ' active-r' : '');
+}
+function setGoalFate(val) {
+  goalFatePoint = val === 1 ? 1 : 0;
+  document.getElementById('goal-fate-0').className = 'guarantee-btn-goal' + (goalFatePoint === 0 ? ' active-g' : '');
+  document.getElementById('goal-fate-1').className = 'guarantee-btn-goal' + (goalFatePoint === 1 ? ' active-r' : '');
+}
+
+function updateInventory() {
+  const primo = parseFloat(document.getElementById('primogems').value)  || 0;
+  const star  = parseFloat(document.getElementById('starglitter').value) || 0;
+  const fates = parseFloat(document.getElementById('fates').value)       || 0;
+  const primoW = primo / 160;
+  // スターライト5個 = 運命の石1個 = 160原石換算
+  const starW = Math.floor(star / 5);
+  const total  = primoW + starW + fates;
+  document.getElementById('conv-primo').textContent  = primo > 0 ? `≈ ${primoW.toFixed(2)} 連` : '';
+  document.getElementById('conv-star').textContent   = star  > 0 ? `= ${starW} 連` : '';
+  document.getElementById('conv-fates').textContent  = fates > 0 ? `= ${fates} 連` : '';
+  document.getElementById('invTotal').textContent    = total.toFixed(2);
+  if (currentMode === 'sim' && !simManualOverride) syncSimWishes();
+  if (currentMode === 'mc'  && !mcManualOverride)  syncMcWishes();
+  return total;
+}
+function onSimWishInput() { simManualOverride = true; }
+function onMcWishInput()  { mcManualOverride = true; }
+
+function calcIncome() {
+  const startVal = document.getElementById('startDate').value;
+  const endVal   = document.getElementById('endDate').value;
+  if (!startVal || !endVal) return null;
+  const start = new Date(startVal), end = new Date(endVal);
+  if (end < start) return null; // 終了日が開始日より前はNG、同日はOK（手持ちのみ計算）
+  const isBlessing    = document.getElementById('isBlessing').checked;
+  const isBP          = document.getElementById('isBP').checked;
+  const primo = parseFloat(document.getElementById('primogems').value) || 0;
+  const star  = parseFloat(document.getElementById('starglitter').value) || 0;
+  const fates = parseFloat(document.getElementById('fates').value) || 0;
+  // スターライト5個で1連換算
+  const currentWishes = primo / 160 + Math.floor(star / 5) + fates;
+
+  const diffDays   = Math.ceil(Math.abs(end - start) / (1000*60*60*24));
+  // 全バージョンのアプデ日テーブル
+  const PATCH_DATES = [
+    '2020-09-28','2020-11-11','2020-12-23','2021-02-03','2021-03-17','2021-04-28',
+    '2021-06-09','2021-07-21','2021-09-01','2021-10-13','2021-11-24','2022-01-05',
+    '2022-02-16','2022-03-30','2022-05-31','2022-07-13','2022-08-24','2022-09-28',
+    '2022-11-02','2022-12-07','2023-01-18','2023-03-01','2023-04-12',
+    '2023-05-24','2023-07-05','2023-08-16','2023-09-27','2023-11-08','2023-12-20',
+    '2024-01-31','2024-03-13','2024-04-24','2024-06-05','2024-07-17','2024-08-28',
+    '2024-10-09','2024-11-20','2025-01-01','2025-02-12','2025-03-26','2025-05-07',
+    '2025-06-18','2025-07-30','2025-09-10','2025-10-22','2025-12-03','2026-01-14',
+    '2026-02-25','2026-04-08','2026-05-20','2026-07-01',
+  ].map(s => new Date(s));
+  // 2.2以前の最後のパッチ日（2021/11/24=2.3開始の前）
+  const VER_23_START  = new Date('2021-11-24'); // 2.3〜 changeCount/verCount +40
+  const MID_VER_START = new Date('2025-06-18'); // 5.7〜 midVerCount有効
+
+  let verCount = 0, midVerCount = 0, earlyCount = 0, changeCount = 0;
+  // 未来分（2026-07-01以降）は42日ごとのループで追加
+  const loopEnd = new Date(end); loopEnd.setDate(loopEnd.getDate() + 42);
+  const lastPatch = new Date('2026-07-01');
+  const futureDates = [];
+  for (let d = new Date(lastPatch); d <= loopEnd; d.setDate(d.getDate() + 42)) {
+    futureDates.push(new Date(d));
+  }
+  const allDates = [...PATCH_DATES, ...futureDates.slice(1)]; // lastPatchは両方に含まれるのでslice(1)
+
+  let verStone = 0;
+  // 同日の場合は収入を加算しない（手持ちのみで計算）
+  if (diffDays > 0) {
+    for (const patch of allDates) {
+      const isOld      = patch < VER_23_START;
+      const verBonus   = isOld ? 620 : 640;
+      const changeBonus = isOld ? 20 : 40;
+      // 各日付は patch のコピーから独立して生成（参照共有なし）
+      const early  = new Date(patch); early.setDate(early.getDate() - 12);
+      const mid    = new Date(patch); mid.setDate(mid.getDate() + 7);
+      const change = new Date(patch); change.setDate(change.getDate() + 20);
+      if (early >= start && early <= end)                                    { earlyCount++;  verStone += 300; }
+      if (patch >= start && patch <= end)                                    { verCount++;    verStone += verBonus; }
+      if (patch >= MID_VER_START && mid >= start && mid <= end)              { midVerCount++; verStone += 450; }
+      if (change >= start && change <= end)                                  { changeCount++; verStone += changeBonus; }
+    }
+  }
+  const dailyBase  = diffDays * 120;
+  const blessStone = isBlessing ? diffDays * 90 : 0;
+  let spiralCnt = 0, theaterCnt = 0, shopCnt = 0;
+  if (diffDays > 0) {
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+      if (d.getDate() === 1)  { theaterCnt++; shopCnt++; }
+      if (d.getDate() === 16) { spiralCnt++; }
+    }
+  }
+  const spiralStone  = spiralCnt  * 800;
+  const theaterStone = theaterCnt * 1000;
+  // verStoneは上のループで個別集計済み
+  const shopW        = shopCnt  * 5.5;
+  const bpW          = isBP ? (verCount * 8.75) : (verCount * 0.5);
+  const stoneTotal   = dailyBase + blessStone + spiralStone + theaterStone + verStone;
+  const incomeWishes = (stoneTotal / 160) + shopW + bpW;
+  const rawTotal      = incomeWishes + currentWishes;
+  // スターライト還元：トータル連数の10%
+  const starglitterBonus = rawTotal * 0.10;
+  const subtotal       = rawTotal + starglitterBonus;
+  // 小数部分を切り上げ（端数は還元欄に含める）
+  const finalTotal      = Math.ceil(subtotal);
+  const cashback        = starglitterBonus + (finalTotal - subtotal);
+
+  return {
+    finalTotal, cashback, currentWishes, diffDays, primo, star, fates,
+    details: [
+      { cat:"現在の所持",          desc:`💎${primo} + ⭐${star} + 🎫${fates}`, val: currentWishes },
+      { cat:"デイリー・イベ",      desc:`${dailyBase}原石 / ${diffDays}日`,     val: dailyBase/160 },
+      { cat:"空月の祝福",          desc: isBlessing ? `${blessStone}原石` : "オフ", val: blessStone/160 },
+      { cat:"螺旋・幻想シアター",   desc:`${spiralStone+theaterStone}原石`,    val:(spiralStone+theaterStone)/160 },
+      { cat:"Ver固定分",           desc:"アプデ・腕試し等",                     val: verStone/160 },
+      { cat:"ショップ交換",        desc:`${shopCnt}ヶ月分`,                     val: shopW },
+      { cat:"紀行",                desc: isBP ? "天空紀行" : "通常分",          val: bpW },
+    ]
+  };
+}
+
+function detailHTML(income) {
+  let html = '';
+  income.details.forEach(i => {
+    html += `<tr><td class="cat">${i.cat}</td><td class="desc">${i.desc}</td><td class="val">+${i.val.toFixed(2)}</td></tr>`;
+  });
+  html += `<tr class="cashback"><td class="cat">スターライト還元</td><td class="desc">総連数の10%還元＋探索報酬</td><td class="val special">+${income.cashback.toFixed(2)}</td></tr>`;
+  return html;
+}
+
+// ── 確率関数 ──
+function charProb(n) {
+  if (n >= 90) return 1;
+  if (n >= 74) return Math.min(1, 0.006 + (n-73)*0.06);
+  return 0.006;
+}
+function weapProb(n) {
+  if (n >= 80) return 1;
+  if (n >= 63) return Math.min(1, 0.007 + (n-62)*0.07);
+  return 0.007;
+}
+
+// 次の★5が出るまでの期待連数（pity=startPityの状態から）
+function expectedNextSR(startPity, probFn, maxPity) {
+  let pny = 1, exp = 0;
+  for (let i = startPity+1; i <= maxPity; i++) {
+    const p = probFn(i);
+    exp += i * p * pny;
+    pny *= (1-p);
+  }
+  exp += maxPity * pny;
+  return exp - startPity;
+}
+
+// [REWRITE] キャラバナー: すり抜け後に「次回は確定保証」を明示的に引き渡す再帰実装
+// guarantee=true : この★5は100%目標キャラ（確定）
+// guarantee=false: 50%で目標キャラ（終了）／50%ですり抜け→次の★5はguarantee=trueとして引き直す
+function expectedPullsForOneCopy_Char(pity, guarantee) {
+  const pullsToNext = expectedNextSR(pity, charProb, 90);
+  if (guarantee) {
+    return pullsToNext; // 確定保証：これで1枚確保
+  }
+  // すり抜けた場合、次の★5はpity=0からの確定保証スタート
+  const pullsAfterMiss = expectedPullsForOneCopy_Char(0, true);
+  return pullsToNext + 0.5 * pullsAfterMiss;
+}
+function expectedCharWishes(count, startPity, isGuaranteed) {
+  if (count <= 0) return 0;
+  let total = 0;
+  let pity  = startPity;
+  let guar  = isGuaranteed;
+  for (let i = 0; i < count; i++) {
+    total += expectedPullsForOneCopy_Char(pity, guar);
+    pity = 0;
+    guar = false; // 1枚確保した後、次の凸は50/50からスタート
+  }
+  return total;
+}
+
+// [REWRITE] 武器バナー: 37.5/62.5システム（命定値）。すり抜け後は「次回は命定値1（確定）」を明示的に引き渡す
+// fate=1: この★5は100%目標武器（確定）
+// fate=0: 37.5%で目標武器（終了）／62.5%ですり抜け→次の★5はfate=1として引き直す
+// （★5排出時は75%でPU武器2種のどちらかが出て、その中で狙った1本の確率はさらに50% → 0.75×0.5=0.375）
+function expectedPullsForOneCopy_Weap(pity, fate) {
+  const pullsToNext = expectedNextSR(pity, weapProb, 80);
+  if (fate === 1) {
+    return pullsToNext; // 命定値1：これで1本確保
+  }
+  // すり抜けた場合、次の★5はpity=0からの命定値1スタート
+  const pullsAfterMiss = expectedPullsForOneCopy_Weap(0, 1);
+  return pullsToNext + 0.625 * pullsAfterMiss;
+}
+function expectedWeapWishes(count, startPity, fatePoint) {
+  if (count <= 0) return 0;
+  let total = 0;
+  let pity  = startPity;
+  let fate  = fatePoint; // 0 or 1
+  for (let i = 0; i < count; i++) {
+    total += expectedPullsForOneCopy_Weap(pity, fate);
+    pity = 0;
+    fate = 0; // 1本確保した後、次の精錬は命定値0からスタート
+  }
+  return total;
+}
+
+function copiesNeeded(cur, tgt) {
+  if (tgt <= cur) return 0;
+  return cur === -1 ? tgt + 1 : tgt - cur;
+}
+
+function calcReverse() {
+  const currentCon        = parseInt($('currentCon').value);
+  const targetCon         = parseInt($('targetCon').value);
+  const weaponCopies      = parseInt($('weaponCopies').value);
+  const goalCurrentRefine = parseInt($('goalCurrentRefine').value);
+  const charPity  = clamp(parseInt($('charPity').value) || 0, 0, 89);
+  const weapPity  = clamp(parseInt($('weapPity').value) || 0, 0, 79);
+  const charCopies = copiesNeeded(currentCon, targetCon);
+  const weapCopies = Math.max(0, weaponCopies - goalCurrentRefine);
+  const charNeeded = expectedCharWishes(charCopies, charPity, goalGuaranteed);
+  const weapNeeded = expectedWeapWishes(weapCopies, weapPity, goalFatePoint);
+  const totalNeeded = charNeeded + weapNeeded;
+  const neededPrimo = Math.ceil(totalNeeded) * 160;
+
+  // 手持ち連数（invTotalから取得）
+  const heldWishes = parseFloat($('invTotal').textContent) || 0;
+  const diff = heldWishes - totalNeeded;
+  const diffPrimo = Math.round(Math.abs(diff) * 160);
+
+  const resultEl = $('result-goal');
+  if (totalNeeded === 0) {
+    $('reverseNeededWishes').textContent = '0';
+    $('reverseNeededPrimo').textContent  = '既に目標を達成しています';
+    $('reverseDiffBanner').className     = 'verdict-banner ok';
+    $('reverseDiffIcon').textContent     = '🎉';
+    $('reverseDiffTag').textContent      = '達成済み';
+    $('reverseDiffTitle').textContent    = '現在の凸数・精錬数が既に目標を満たしています。';
+    $('reverseDiffDetail').textContent   = '';
+    $('reverseBreakWrap').style.display  = 'none';
+  } else {
+    $('reverseNeededWishes').textContent = Math.ceil(totalNeeded);
+    $('reverseNeededPrimo').textContent  = `原石換算 ${neededPrimo.toLocaleString()}個`;
+
+    let cls, icon, tag, mainTitle, detail;
+    if (diff >= 0) {
+      cls = diff >= totalNeeded * 0.3 ? 'ok' : 'warn';
+      icon = diff >= totalNeeded * 0.3 ? '✅' : '⚠️';
+      tag = diff >= totalNeeded * 0.3 ? '余裕あり' : 'ギリギリ';
+      mainTitle = `手持ちで ${diff.toFixed(1)}連 余裕があります`;
+      detail = `手持ち <b>${heldWishes.toFixed(1)}連</b> に対し必要 <b>${Math.ceil(totalNeeded)}連</b>（原石換算 <b>${(diff * 160).toFixed(0)}個</b> 余剰）`;
+    } else {
+      cls = 'ng'; icon = '❌'; tag = '不足';
+      mainTitle = `あと ${diffPrimo.toLocaleString()}個の原石が必要です`;
+      detail = `手持ち <b>${heldWishes.toFixed(1)}連</b> に対し <b>${Math.abs(diff).toFixed(1)}連</b> 不足（原石換算 <b>${diffPrimo.toLocaleString()}個</b>）`;
+    }
+    $('reverseDiffBanner').className   = `verdict-banner ${cls}`;
+    $('reverseDiffIcon').textContent   = icon;
+    $('reverseDiffTag').textContent    = tag;
+    $('reverseDiffTitle').textContent  = mainTitle;
+    $('reverseDiffDetail').innerHTML   = detail;
+
+    let chips = '';
+    if (charCopies > 0) chips += `<span class="needs-chip"><span class="dot" style="background:var(--accent2)"></span>キャラ <b>${charCopies}枚</b>：期待 <b>${charNeeded.toFixed(1)}連</b>（<b>${Math.ceil(charNeeded*160).toLocaleString()}原石</b>）</span>`;
+    if (weapCopies > 0) chips += `<span class="needs-chip"><span class="dot" style="background:var(--gold)"></span>武器 <b>${weapCopies}本</b>：期待 <b>${weapNeeded.toFixed(1)}連</b>（<b>${Math.ceil(weapNeeded*160).toLocaleString()}原石</b>）</span>`;
+    $('reverseBreakdown').innerHTML       = chips;
+    $('reverseBreakWrap').style.display   = chips ? 'block' : 'none';
+  }
+
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function syncSimWishes() {
+  const income = calcIncome();
+  if (!income) return;
+  if (!simManualOverride) document.getElementById('simWishes').value = Math.ceil(income.finalTotal);
+}
+
+// キャラバナーの期待★5数（50/50考慮なし、pity分布ベース）
+function simExpectedSRAccurate(totalPulls, startPity, probFn, maxPity) {
+  let state = new Map(); state.set(startPity, 1.0);
+  let totalSR = 0;
+  for (let pull = 1; pull <= totalPulls; pull++) {
+    const nextState = new Map();
+    for (const [pity, prob] of state) {
+      const newPity = pity + 1;
+      const p = probFn(newPity);
+      const srProb = prob * p;
+      totalSR += srProb;
+      nextState.set(0, (nextState.get(0) || 0) + srProb);
+      nextState.set(newPity, (nextState.get(newPity) || 0) + prob * (1 - p));
+    }
+    state = nextState;
+    if (pull % 100 === 0) { for (const [k, v] of state) { if (v < 1e-10) state.delete(k); } }
+  }
+  return totalSR;
+}
+
+function simExpected4star(totalPulls) {
+  let state = new Map(); state.set(0, 1.0); let total4 = 0;
+  for (let pull = 1; pull <= totalPulls; pull++) {
+    const next = new Map();
+    for (const [pity, prob] of state) {
+      const np = pity + 1; const p4 = np >= 10 ? 1.0 : 0.051; const hit = prob * p4;
+      total4 += hit; next.set(0, (next.get(0)||0) + hit);
+      if (p4 < 1) next.set(np, (next.get(np)||0) + prob*(1-p4));
+    }
+    state = next;
+  }
+  return total4;
+}
+
+function calcSim() {
+  const income = calcIncome();
+  if (!income) { alert("期間を正しく設定してください"); return; }
+  const totalPulls = parseInt(document.getElementById('simWishes').value) || Math.ceil(income.finalTotal);
+  const charPity   = Math.min(89, Math.max(0, parseInt(document.getElementById('simCharPity').value)||0));
+  const weapPity   = Math.min(79, Math.max(0, parseInt(document.getElementById('simWeapPity').value)||0));
+  const halfChar   = Math.floor(totalPulls / 2), halfWeap = totalPulls - halfChar;
+
+  // ★5総数（50/50込み）：約半数が目標キャラ
+  const char5_total_all  = simExpectedSRAccurate(totalPulls, charPity, charProb, 90);
+  const char5_rateup_all = char5_total_all * 0.5; // 50/50で半分が目標キャラ
+  const char5_total_half = simExpectedSRAccurate(halfChar, charPity, charProb, 90);
+  const char5_rateup_half = char5_total_half * 0.5;
+
+  // 武器バナー★5目標武器：37.5/62.5システムで期待値約61.5%が目標武器
+  // (fate=0から: 37.5%で即確保／62.5%で外れ→次の★5は100%確定 なので2回以内に1本)
+  // fate=0: 期待(1本取得に必要な★5回数) = 1*0.375 + 2*0.625 = 1.625
+  // つまり1本につき1.625回の★5が必要 → 1本/1.625★5 ≈ 0.615本/★5
+  const weap5_total_all  = simExpectedSRAccurate(totalPulls, weapPity, weapProb, 80);
+  const weap5_rateup_all = weap5_total_all / 1.625;
+  const weap5_total_half = simExpectedSRAccurate(halfWeap, weapPity, weapProb, 80);
+  const weap5_rateup_half = weap5_total_half / 1.625;
+
+  const char4_all  = simExpected4star(totalPulls);
+  const weap4_all  = simExpected4star(totalPulls);
+  const char4_half = simExpected4star(halfChar);
+  const weap4_half = simExpected4star(halfWeap);
+
+  document.getElementById('sim-char5').textContent     = char5_rateup_all.toFixed(1);
+  document.getElementById('sim-char5-sub').innerHTML   = `全連キャラバナーに使用した場合<br>（★5計 <b>${char5_total_all.toFixed(1)}体</b>）<br>均等分配なら <b>${char5_rateup_half.toFixed(1)}体</b>`;
+  document.getElementById('sim-char4').textContent     = char4_all.toFixed(1);
+  document.getElementById('sim-char4-sub').innerHTML   = `全連キャラバナーの場合<br>均等分配なら <b>${char4_half.toFixed(1)}体</b>`;
+  document.getElementById('sim-weap5').textContent     = weap5_rateup_all.toFixed(1);
+  document.getElementById('sim-weap5-sub').innerHTML   = `全連武器バナーに使用した場合<br>（★5計 <b>${weap5_total_all.toFixed(1)}本</b>）<br>均等分配なら <b>${weap5_rateup_half.toFixed(1)}本</b>`;
+  document.getElementById('sim-weap4').textContent     = weap4_all.toFixed(1);
+  document.getElementById('sim-weap4-sub').innerHTML   = `全連武器バナーの場合<br>均等分配なら <b>${weap4_half.toFixed(1)}本</b>`;
+
+  const maxSR = Math.max(char5_total_all, weap5_total_all, 1);
+  const bars = [
+    { name:`キャラ★5目標（全${totalPulls}連）`, val:char5_rateup_all, max:maxSR, cls:'gold', unit:'体' },
+    { name:`キャラ★4（全${totalPulls}連）`,     val:char4_all, max:char4_all*1.1, cls:'purple', unit:'体' },
+    { name:`武器★5目標（全${totalPulls}連）`,   val:weap5_rateup_all, max:maxSR, cls:'gold', unit:'本' },
+    { name:`武器★4（全${totalPulls}連）`,       val:weap4_all, max:weap4_all*1.1, cls:'purple', unit:'本' },
+  ];
+  let barsHTML = '';
+  bars.forEach(b => {
+    const pct = Math.min((b.val/(b.max||1))*100,100).toFixed(1);
+    barsHTML += `<div class="sim-bar-item"><div class="sim-bar-head"><span class="sim-bar-name">${b.name}</span><span class="sim-bar-val" style="color:${b.cls==='gold'?'var(--gold)':'var(--accent2)'}">${b.val.toFixed(1)} ${b.unit}</span></div><div class="sim-bar-track"><div class="sim-bar-fill ${b.cls}" style="width:${pct}%"></div></div></div>`;
+  });
+  document.getElementById('simBars').innerHTML = barsHTML;
+  document.getElementById('simNote').innerHTML = `📌 キャラ★5目標 = ★5排出数 × 50%（50/50）、武器★5目標 = ★5排出数 ÷ 1.625（命定値システム）で計算。均等分配時は各カード下段に表示。`;
+  document.getElementById('totalWishes-sim').textContent = totalPulls;
+  document.getElementById('detailBody-sim').innerHTML = detailHTML(income);
+  document.getElementById('result-sim').style.display = 'block';
+  document.getElementById('result-sim').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function syncMcWishes() {
+  const income = calcIncome();
+  if (!income) return;
+  if (!mcManualOverride) document.getElementById('mcWishes').value = Math.ceil(income.finalTotal);
+}
+
+// ── モンテカルロ用シミュレーション ──
+let mcWorker = null;
+
+function cancelMonteCarlo() {
+  if (mcWorker) { mcWorker.terminate(); mcWorker = null; }
+  document.getElementById('mcProgressWrap').style.display = 'none';
+  document.getElementById('cancelBtn-mc').style.display = 'none';
+  const btn = document.getElementById('calcBtn-mc');
+  btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
+}
+
+function runMonteCarlo() {
+  const income = calcIncome();
+  if (!income) { alert("期間を正しく設定してください"); return; }
+
+  const totalPulls = parseInt(document.getElementById('mcWishes').value) || Math.ceil(income.finalTotal);
+  const charPity0  = clamp(parseInt($('mcCharPity').value) || 0, 0, 89);
+  const weapPity0  = clamp(parseInt($('mcWeapPity').value) || 0, 0, 79);
+  const currentCon = parseInt(document.getElementById('mcCurrentCon').value);
+  const targetCon  = parseInt(document.getElementById('mcTargetCon').value);
+  const targetRef  = parseInt(document.getElementById('mcTargetRefine').value);
+  const currentRef = parseInt(document.getElementById('mcCurrentRefine').value);
+  const trials     = parseInt(document.getElementById('mcTrials').value);
+
+  const btn = document.getElementById('calcBtn-mc');
+  btn.disabled = true; btn.textContent = '計算中...';
+  const progressWrap  = document.getElementById('mcProgressWrap');
+  const progressLabel = progressWrap.querySelector('.mc-progress-label span:first-child');
+  progressWrap.style.display = 'block';
+  document.getElementById('mcProgressFill').style.width = '0%';
+  document.getElementById('mcProgressPct').textContent  = '0%';
+  document.getElementById('cancelBtn-mc').style.display = 'block';
+  document.getElementById('result-mc').style.display = 'none';
+
+  // 前回のWorkerが残っていればキャンセル
+  if (mcWorker) { mcWorker.terminate(); mcWorker = null; }
+
+  mcWorker = new Worker('worker.js');
+
+  mcWorker.onmessage = function(ev) {
+    const { type, pct, data } = ev.data;
+
+    if (type === 'cancelled') {
+      progressWrap.style.display = 'none';
+      document.getElementById('cancelBtn-mc').style.display = 'none';
+      btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
+      mcWorker = null;
+      return;
+    }
+
+    if (type === 'progress') {
+      const label = pct < 40 ? '✨ 最適配分を探索中...' : pct < 80 ? 'シミュレーション実行中...' : 'グラフ生成中...';
+      progressLabel.textContent = label;
+      document.getElementById('mcProgressFill').style.width = pct + '%';
+      document.getElementById('mcProgressPct').textContent  = pct + '%';
+      return;
+    }
+
+    if (type === 'result') {
+      mcWorker = null;
+      const {
+        conRates, targetReachRate, weapReachRate, setReachRate,
+        meanChar, p50Char, charPulls, weapPulls,
+        lineXLabels, lineCharRates, lineWeapRates, lineSetRates,
+        finalConBuckets: fbRaw, charSampleLength
+      } = data;
+
+      // setBanner
+      const setBanner = document.getElementById('setAchieveBanner');
+      if (setReachRate !== null) {
+        const cls  = setReachRate >= 80 ? 'ok' : setReachRate >= 50 ? 'warn' : 'ng';
+        const icon = setReachRate >= 80 ? '✅' : setReachRate >= 50 ? '⚠️' : '❌';
+        setBanner.style.display = 'block';
+        setBanner.innerHTML = `
+          <div class="set-achieve-banner ${cls}">
+            <div class="set-achieve-header">
+              <div class="set-achieve-icon">${icon}</div>
+              <div><div class="set-achieve-tag">セット達成率（キャラ＋武器 同時達成）</div><div class="set-achieve-rate">${setReachRate.toFixed(1)}%</div></div>
+            </div>
+            <div class="set-sub-rates">
+              <div class="set-sub-card"><div class="set-sub-label">キャラ単体<br>C${targetCon} 到達率</div><div class="set-sub-val" style="color:var(--green)">${targetReachRate.toFixed(1)}%</div></div>
+              <div class="set-sub-card"><div class="set-sub-label">武器単体<br>R${targetRef} 到達率</div><div class="set-sub-val" style="color:var(--gold)">${weapReachRate.toFixed(1)}%</div></div>
+            </div>
+            <div class="set-alloc-note">✨ 最適配分：キャラ <b>${charPulls}連</b> ＋ 武器 <b>${weapPulls}連</b>（合計 <b>${totalPulls}連</b>）<br>セット達成確率が最大になる配分で自動計算しています。</div>
+          </div>`;
+      } else {
+        setBanner.style.display = 'none';
+        setBanner.innerHTML = '';
+      }
+
+      // レートカード
+      const startCon = currentCon === -1 ? 0 : currentCon + 1;
+      const showCons = Array.from(
+        { length: 7 - startCon },
+        (_, i) => startCon + i
+      ).filter(c => conRates[c] !== undefined);
+      let cardsHTML = '';
+      showCons.forEach(c => {
+        cardsHTML += `<div class="mc-rate-card ${c===targetCon?'highlight':''}"><div class="mc-rate-card-label">C${c}<br>到達率</div><div class="mc-rate-card-pct">${conRates[c].toFixed(1)}%</div><div class="mc-rate-card-sub">${trials.toLocaleString()}試行</div></div>`;
+      });
+      if (weapReachRate !== null) {
+        cardsHTML += `<div class="mc-rate-card highlight" style="border-color:var(--gold);"><div class="mc-rate-card-label" style="color:var(--gold)">R${targetRef}<br>到達率（武器）</div><div class="mc-rate-card-pct" style="background:linear-gradient(135deg,var(--gold),#c0a060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${weapReachRate.toFixed(1)}%</div><div class="mc-rate-card-sub">${trials.toLocaleString()}試行</div></div>`;
+      }
+      document.getElementById('mcRateCards').innerHTML = cardsHTML;
+
+      document.getElementById('mcStatsGrid').innerHTML = `
+        <div class="mc-stat-item"><div class="mc-stat-label">平均取得枚数<br>（キャラ）</div><div class="mc-stat-val">${meanChar.toFixed(2)}<span class="mc-stat-unit"> 枚</span></div></div>
+        <div class="mc-stat-item"><div class="mc-stat-label">50%ライン<br>（中央値）</div><div class="mc-stat-val">${p50Char}<span class="mc-stat-unit"> 枚</span></div></div>
+        <div class="mc-stat-item"><div class="mc-stat-label">目標 C${targetCon}<br>到達率</div><div class="mc-stat-val" style="color:${targetReachRate>=80?'var(--green)':targetReachRate>=50?'var(--orange)':'var(--red)'}">${targetReachRate.toFixed(1)}<span class="mc-stat-unit">%</span></div></div>`;
+
+      // lineChart
+      const STEPS = lineXLabels.length - 1;
+      const maxSetRate  = Math.max(...lineSetRates);
+      const maxSetIndex = lineSetRates.indexOf(maxSetRate);
+      if (lineChart) lineChart.destroy();
+      const lineCtx = document.getElementById('mcLineChart').getContext('2d');
+      const datasets = [
+        { label:`C${targetCon}到達率（キャラ）`, data:lineCharRates, borderColor:'#3fb950', backgroundColor:'rgba(63,185,80,0.06)', fill:false, tension:0.35, pointRadius:4, pointHoverRadius:6 },
+      ];
+      if (targetRef > 0) {
+        datasets.push({ label:`R${targetRef}到達率（武器）`, data:lineWeapRates, borderColor:'#e3b341', backgroundColor:'rgba(227,179,65,0.06)', fill:false, tension:0.35, pointRadius:4, pointHoverRadius:6 });
+        const pColors = lineSetRates.map((_,i) => i===maxSetIndex ? '#ff9944' : 'rgba(188,140,255,0.9)');
+        const pSizes  = lineSetRates.map((_,i) => i===maxSetIndex ? 8 : 4);
+        datasets.push({ label:`両方達成率（セット）`, data:lineSetRates, borderColor:'#bc8cff', backgroundColor:'rgba(188,140,255,0.1)', fill:true, tension:0.35, borderWidth:2.5, pointRadius:pSizes, pointBackgroundColor:pColors, pointHoverRadius:8 });
+      }
+      lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: { labels: lineXLabels, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            y: { min:0, max:100, ticks:{ color:'#8b949e', callback:v=>v+'%' }, grid:{ color:'rgba(48,54,61,0.6)' } },
+            x: { ticks:{ color:'#8b949e', maxRotation:35, font:{ size:9 } }, grid:{ color:'rgba(48,54,61,0.3)' } }
+          },
+          plugins: {
+            legend: { labels:{ color:'#e6edf3', font:{ weight:'700' }, boxWidth:12 } },
+            tooltip: {
+              callbacks: {
+                title: items => { const i=items[0].dataIndex; const cp=Math.round((i/STEPS)*totalPulls); return `キャラ ${cp}連 / 武器 ${totalPulls-cp}連`; },
+                label: ctx => ` ${ctx.dataset.label.split('（')[0]}: ${ctx.raw}%`
+              }
+            }
+          }
+        }
+      });
+
+      // distChart（WorkerからはMapではなくオブジェクトで受け取る）
+      // X軸は常に未所持〜C6まで固定表示
+      const fixedFcKeys = [-1, 0, 1, 2, 3, 4, 5, 6];
+      const histLabels  = fixedFcKeys.map(fc => fc === -1 ? '未所持' : `C${fc}`);
+      const histPcts    = fixedFcKeys.map(fc => fbRaw[fc] ? parseFloat(((fbRaw[fc] / charSampleLength) * 100).toFixed(1)) : 0);
+      const histColors  = fixedFcKeys.map(fc => fc === targetCon ? 'rgba(227,179,65,0.85)' : 'rgba(63,185,80,0.6)');
+      const histCounts  = fixedFcKeys.map(fc => fbRaw[fc] || 0);
+      if (distChart) distChart.destroy();
+      const distCtx = document.getElementById('mcDistChart').getContext('2d');
+      distChart = new Chart(distCtx, {
+        type: 'bar',
+        data: { labels:histLabels, datasets:[{ label:'割合', data:histPcts, backgroundColor:histColors, borderRadius:4, borderSkipped:false }] },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          scales: { y:{ ticks:{ color:'#8b949e', callback:v=>v+'%' }, grid:{ color:'rgba(48,54,61,0.6)' } }, x:{ ticks:{ color:'#8b949e' }, grid:{ display:false } } },
+          plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>` ${ctx.raw}% (${histCounts[ctx.dataIndex].toLocaleString()}回)` } } }
+        }
+      });
+
+      document.getElementById('detailBody-mc').innerHTML = detailHTML(income);
+      progressWrap.style.display = 'none';
+      document.getElementById('result-mc').style.display = 'block';
+      document.getElementById('cancelBtn-mc').style.display = 'none';
+      btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
+      document.getElementById('result-mc').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  };
+
+  mcWorker.onerror = function(e) {
+    console.error('Worker error:', e);
+    progressWrap.style.display = 'none';
+    btn.disabled = false; btn.textContent = 'モンテカルロ シミュレーション →';
+    document.getElementById('cancelBtn-mc').style.display = 'none';
+    alert('計算中にエラーが発生しました。');
+    mcWorker = null;
+  };
+
+  mcWorker.postMessage({
+    type: 'run',
+    payload: {
+      totalPulls, charPity0, weapPity0, currentCon, targetCon,
+      targetRef, currentRef, trials, mcGuaranteed, mcFatePoint
+    }
+  });
+}
+
+// ローカルストレージ（原石・スターライト・ガチャ石・課金オプションのみ保存）
+const STORAGE_KEY = 'genshin_calc_v1';
+function saveSettings() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      primogems:   document.getElementById('primogems').value,
+      starglitter: document.getElementById('starglitter').value,
+      fates:       document.getElementById('fates').value,
+      isBlessing:  document.getElementById('isBlessing').checked,
+      isBP:        document.getElementById('isBP').checked,
+    }));
+  } catch(e) { console.warn('保存失敗:', e); }
+}
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const s = JSON.parse(saved);
+    if (s.primogems   !== undefined) document.getElementById('primogems').value       = s.primogems;
+    if (s.starglitter !== undefined) document.getElementById('starglitter').value     = s.starglitter;
+    if (s.fates       !== undefined) document.getElementById('fates').value           = s.fates;
+    if (s.isBlessing  !== undefined) {
+      document.getElementById('isBlessing').checked = s.isBlessing;
+      document.getElementById('lbl-blessing').classList.toggle('active', s.isBlessing);
+    }
+    if (s.isBP        !== undefined) {
+      document.getElementById('isBP').checked = s.isBP;
+      document.getElementById('lbl-bp').classList.toggle('active', s.isBP);
+    }
+  } catch(e) { console.warn('読み込み失敗:', e); }
+}
+
+// イベントリスナー（重複なし）
+document.getElementById('startDate').addEventListener('change', () => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); });
+document.getElementById('endDate').addEventListener('change',   () => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); });
+document.getElementById('isBlessing').addEventListener('change',() => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); saveSettings(); });
+document.getElementById('isBP').addEventListener('change',      () => { simManualOverride=false; mcManualOverride=false; syncSimWishes(); syncMcWishes(); saveSettings(); });
+document.getElementById('primogems').addEventListener('input',  () => { updateInventory(); saveSettings(); });
+document.getElementById('starglitter').addEventListener('input',() => { updateInventory(); saveSettings(); });
+document.getElementById('fates').addEventListener('input',      () => { updateInventory(); saveSettings(); });
+
+loadSettings();
+updateInventory();
+</script>
+
+<div style="margin:40px auto 0;max-width:740px;padding:0 18px;">
+  <section style="margin-bottom:32px;">
+    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-bottom:12px;">原神のガチャ仕様と仮天井について</h2>
+    <p style="font-size:0.82em;color:var(--muted);line-height:1.9;">
+      原神のキャラクターバナーでは、★5キャラクターの基本排出率は0.6%です。73連以降から仮天井が発動し、毎連ごとに確率が上昇します。90連で確定排出となります。また、★5を獲得した際にピックアップキャラでない場合（すり抜け）、次回の★5は100%ピックアップキャラが排出される「確定保証」があります。<br>
+      武器バナーは62連から仮天井が始まり、80連確定。さらに「神鋳軌定」システムにより、軌定した武器以外の武器が出ると命定値が貯まり、次回の★5が軌定した武器で確定します。
+    </p>
+    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-top:20px;margin-bottom:12px;">計算機の使い方</h2>
+    <p style="font-size:0.82em;color:var(--muted);line-height:1.9;">
+      ①「手持ちリソース」に現在の原石・スターライト・ガチャ石の数を入力します。<br>②「シミュレーション期間」で今日から目標バナー終了日を設定すると、バージョン配布分を含めた入手予定連数が自動計算されます。<br>③「モンテカルロシミュレーション」では10万回試行による詳細な確率分布と最適な連数配分を確認できます。<br>④「必要原石逆算」では指定したガチャ目標にはどれだけのガチャ石、もしくは原石が必要であるのかを期待値から確認できます。<br>⑤「排出シミュレーター」では設定したガチャ回数でどれだけ★4・★5が引けるかシミュレーションすることができます。
+    </p>
+    <h2 style="font-size:1em;font-weight:700;color:var(--text);margin-top:20px;margin-bottom:12px;">よくある質問</h2>
+    <dl style="font-size:0.82em;color:var(--muted);line-height:1.9;">
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">すり抜け時の保証（確定枠）は引き継がれますか？</dt>
+      <dd style="margin:0 0 0 0;">はい。バナーが変わっても確定保証は引き継がれます。「現在の保証状態」で「次は確定」を選択してください。</dd>
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">バージョンごとの配布原石はどのくらいですか？</dt>
+      <dd style="margin:0 0 0 0;">アップデート時に640原石（バージョンアップ・サーバーメンテナンス補償・腕試し）、前半後半切り替え時に40原石（腕試し）、アップデート2週間前の金曜日に300原石（予告番組報酬）が配布されます。5.7以降はさらに幽境の激戦の報酬として450原石が追加されます（いずれも推定値）。</dd>
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">スターライトはどう換算されますか？</dt>
+      <dd style="margin:0 0 0 0;">スターライト5個につきガチャ石1個として換算しています。スターライト交換所で入手できる最大枚数を自動計算します。</dd>
+      <dt style="font-weight:700;color:var(--text);margin-top:10px;">ガチャを引いて新たに出たスターライトはどのように計算していますか？</dt>
+      <dd style="margin:0 0 0 0;">★4キャラ完凸想定で10回につき5個のスターライト、つまりガチャ石1個分還元される仕様として計算します。</dd>
+
+    </dl>
+  </section>
+</div>
+<div style="margin:40px auto 24px;max-width:740px;padding:0 18px;">
+  <div style="font-size:0.70em;color:var(--muted);line-height:1.8;border-top:1px solid var(--border);padding-top:14px;">
+    <div style="font-weight:700;margin-bottom:6px;color:var(--muted)">⚠️ 免責事項・注意事項</div>
+    <ul style="margin:0;padding-left:1.4em;list-style:disc;">
+      <li>イベント報酬は推定値であり、1日あたりの平均として計算しています。実際の配布量・タイミングはイベント内容により異なります。</li>
+      <li>探索・達成報酬（マップ解放・宝箱等）はほぼ換算していません。既に取得済みの場合は手動で原石欄に加算してください。</li>
+      <li>バージョン報酬（原石・腕試し等）の配布タイミングは推定です。実際の日程とは前後する場合があります。</li>
+      <li>ガチャ確率（ソフト天井の傾き等）は公開情報をもとに実装していますが、ゲーム内の実装との完全な一致を保証するものではありません。</li>
+      <li>本ツールはファンメイドであり、HoYoverse（miHoYo）とは無関係です。</li>
+    </ul>
+  </div>
+</div>
+<footer style="margin-top: 40px; text-align: center; color: #888; font-size: 0.85em; padding: 20px;">
+  <p>ご意見・ご要望・バグ報告は X(<a href="https://x.com/genshincalc" target="_blank" rel="noopener" style="color: #4a90e2;">@genshincalc</a>)までお気軽にどうぞ!</p>
+</footer>
+</body>
+</html>
