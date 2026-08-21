@@ -1037,46 +1037,46 @@ function runMonteCarlo() {
         <div class="mc-stat-item"><div class="mc-stat-label">50%ライン<br>（中央値）</div><div class="mc-stat-val">${p50Char}<span class="mc-stat-unit"> 枚</span></div></div>
         <div class="mc-stat-item"><div class="mc-stat-label">目標 C${targetCon}<br>到達率</div><div class="mc-stat-val" style="color:${targetReachRate>=80?'var(--green)':targetReachRate>=50?'var(--orange)':'var(--red)'}">${targetReachRate.toFixed(1)}<span class="mc-stat-unit">%</span></div></div>`;
 
-      // lineChart
-      const STEPS = lineXLabels.length - 1;
-      const maxSetRate  = Math.max(...lineSetRates);
-      const maxSetIndex = lineSetRates.indexOf(maxSetRate);
-      if (lineChart) lineChart.destroy();
-      const lineCtx = document.getElementById('mcLineChart').getContext('2d');
-      const datasets = [
-        { label:`C${targetCon}到達率（キャラ）`, data:lineCharRates, borderColor:'#3fb950', backgroundColor:'rgba(63,185,80,0.06)', fill:false, tension:0.35, pointRadius:4, pointHoverRadius:6 },
-      ];
-      if (targetRef > 0) {
-        datasets.push({ label:`R${targetRef}到達率（武器）`, data:lineWeapRates, borderColor:'#e3b341', backgroundColor:'rgba(227,179,65,0.06)', fill:false, tension:0.35, pointRadius:4, pointHoverRadius:6 });
-        const pColors = lineSetRates.map((_,i) => i===maxSetIndex ? '#ff9944' : 'rgba(188,140,255,0.9)');
-        const pSizes  = lineSetRates.map((_,i) => i===maxSetIndex ? 8 : 4);
-        datasets.push({ label:`両方達成率（セット）`, data:lineSetRates, borderColor:'#bc8cff', backgroundColor:'rgba(188,140,255,0.1)', fill:true, tension:0.35, borderWidth:2.5, pointRadius:pSizes, pointBackgroundColor:pColors, pointHoverRadius:8 });
-      }
-      lineChart = new Chart(lineCtx, {
-        type: 'line',
-        data: { labels: lineXLabels, datasets },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          scales: {
-            y: { min:0, max:100, ticks:{ color:'#8b949e', callback:v=>v+'%' }, grid:{ color:'rgba(48,54,61,0.6)' } },
-            x: { ticks:{ color:'#8b949e', maxRotation:35, font:{ size:9 } }, grid:{ color:'rgba(48,54,61,0.3)' } }
-          },
-          plugins: {
-            legend: { labels:{ color:'#e6edf3', font:{ weight:'700' }, boxWidth:12 } },
-            tooltip: {
-              callbacks: {
-                title: items => { const i=items[0].dataIndex; const cp=Math.round((i/STEPS)*totalPulls); return `キャラ ${cp}連 / 武器 ${totalPulls-cp}連`; },
-                label: ctx => ` ${ctx.dataset.label.split('（')[0]}: ${ctx.raw}%`
-              }
-            }
-          }
-        }
-      });
-
       // グラフ切り替え：両方あり→lineChart、それ以外→分布グラフ
       const hasBoth = targetRef > 0 && charPulls > 0 && weapPulls > 0;
       $('lineChartWrap').style.display = hasBoth ? '' : 'none';
       $('distChartWrap').style.display = hasBoth ? 'none' : '';
+
+      // lineChartはhasBothのときのみ描画
+      if (hasBoth) {
+        const STEPS = lineXLabels.length - 1;
+        const maxSetRate  = Math.max(...lineSetRates);
+        const maxSetIndex = lineSetRates.indexOf(maxSetRate);
+        if (lineChart) lineChart.destroy();
+        const lineCtx = document.getElementById('mcLineChart').getContext('2d');
+        const datasets = [
+          { label:`C${targetCon}到達率（キャラ）`, data:lineCharRates, borderColor:'#3fb950', backgroundColor:'rgba(63,185,80,0.06)', fill:false, tension:0.35, pointRadius:4, pointHoverRadius:6 },
+        ];
+        datasets.push({ label:`R${targetRef}到達率（武器）`, data:lineWeapRates, borderColor:'#e3b341', backgroundColor:'rgba(227,179,65,0.06)', fill:false, tension:0.35, pointRadius:4, pointHoverRadius:6 });
+        const pColors = lineSetRates.map((_,i) => i===maxSetIndex ? '#ff9944' : 'rgba(188,140,255,0.9)');
+        const pSizes  = lineSetRates.map((_,i) => i===maxSetIndex ? 8 : 4);
+        datasets.push({ label:`両方達成率（セット）`, data:lineSetRates, borderColor:'#bc8cff', backgroundColor:'rgba(188,140,255,0.1)', fill:true, tension:0.35, borderWidth:2.5, pointRadius:pSizes, pointBackgroundColor:pColors, pointHoverRadius:8 });
+        lineChart = new Chart(lineCtx, {
+          type: 'line',
+          data: { labels: lineXLabels, datasets },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {
+              y: { min:0, max:100, ticks:{ color:'#8b949e', callback:v=>v+'%' }, grid:{ color:'rgba(48,54,61,0.6)' } },
+              x: { ticks:{ color:'#8b949e', maxRotation:35, font:{ size:9 } }, grid:{ color:'rgba(48,54,61,0.3)' } }
+            },
+            plugins: {
+              legend: { labels:{ color:'#e6edf3', font:{ weight:'700' }, boxWidth:12 } },
+              tooltip: {
+                callbacks: {
+                  title: items => { const i=items[0].dataIndex; const cp=Math.round((i/STEPS)*totalPulls); return `キャラ ${cp}連 / 武器 ${totalPulls-cp}連`; },
+                  label: ctx => ` ${ctx.dataset.label.split('（')[0]}: ${ctx.raw}%`
+                }
+              }
+            }
+          }
+        });
+      }
 
       if (!hasBoth) {
         if (distChart) distChart.destroy();
