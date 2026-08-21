@@ -107,6 +107,7 @@ async function run(p) {
   let weapReachCnt = 0, setReachCnt = 0, charObtainedSum = 0;
   const MEDIAN_CAP = 50000;
   const charSample = [];
+  const weapSample = [];
   const BATCH = Math.max(500, Math.ceil(trials / 100));
   for (let i = 0; i < trials; i += BATCH) {
     if (cancelled) { postMessage({ type: 'cancelled' }); return; }
@@ -119,6 +120,7 @@ async function run(p) {
       if (r.finalCon >= targetCon && (targetRef === 0 || r.refines + currentRef >= targetRef)) setReachCnt++;
       charObtainedSum += r.obtained;
       if (charSample.length < MEDIAN_CAP) charSample.push(r.obtained);
+      if (targetRef > 0 && weapSample.length < MEDIAN_CAP) weapSample.push(r.refines);
     }
     postMessage({ type: 'progress', pct: 45 + Math.round((Math.min(i + BATCH, trials) / trials) * 35) });
   }
@@ -162,15 +164,15 @@ async function run(p) {
 
   postMessage({ type: 'progress', pct: 99 });
 
-  // ⑤ distChart用データ生成
+  // ⑤ distChart用データ生成（キャラ）
   const obtainedToFinalCon = (obtained) => {
     if (currentCon === -1) return obtained >= 1 ? Math.min(6, obtained - 1) : -1;
     return Math.min(6, currentCon + obtained);
   };
   let maxObtained = 1;
-for (let i = 0; i < charSample.length; i++) {
-  if (charSample[i] > maxObtained) maxObtained = charSample[i];
-}
+  for (let i = 0; i < charSample.length; i++) {
+    if (charSample[i] > maxObtained) maxObtained = charSample[i];
+  }
   const rawBuckets = new Array(maxObtained + 1).fill(0);
   charSample.forEach(v => { rawBuckets[v]++; });
   const finalConBuckets = {};
@@ -179,13 +181,24 @@ for (let i = 0; i < charSample.length; i++) {
     finalConBuckets[fc] = (finalConBuckets[fc] || 0) + count;
   });
 
+  // ⑥ distChart用データ生成（武器）
+  const weapRefineBuckets = {};
+  if (targetRef > 0) {
+    for (let r = 0; r <= 5; r++) weapRefineBuckets[r] = 0;
+    weapSample.forEach(refines => {
+      const totalRefines = Math.min(5, currentRef + refines);
+      weapRefineBuckets[totalRefines] = (weapRefineBuckets[totalRefines] || 0) + 1;
+    });
+  }
+
   postMessage({
     type: 'result',
     data: {
       conRates, targetReachRate, weapReachRate, setReachRate,
       meanChar, p50Char, charPulls, weapPulls, totalPulls,
       lineXLabels, lineCharRates, lineWeapRates, lineSetRates,
-      finalConBuckets, charSampleLength: charSample.length
+      finalConBuckets, charSampleLength: charSample.length,
+      weapRefineBuckets, weapSampleLength: weapSample.length
     }
   });
 }

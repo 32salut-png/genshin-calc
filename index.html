@@ -447,12 +447,12 @@
       <div id="setAchieveBanner"></div>
       <div class="mc-rate-cards" id="mcRateCards"></div>
       <div class="mc-stats-grid" id="mcStatsGrid"></div>
-      <div class="mc-chart-wrap">
-        <div class="mc-chart-title">配分比ごとの達成率（同一リソースで最適配分を探す）</div>
+      <div class="mc-chart-wrap" id="lineChartWrap">
+        <div class="mc-chart-title" id="lineChartTitle">配分比ごとの達成率（同一リソースで最適配分を探す）</div>
         <div class="mc-chart-canvas"><canvas id="mcLineChart"></canvas></div>
       </div>
-      <div class="mc-dist-wrap">
-        <div class="mc-chart-title">キャラ取得数の分布（試行結果）</div>
+      <div class="mc-dist-wrap" id="distChartWrap">
+        <div class="mc-chart-title" id="distChartTitle">取得数の分布（試行結果）</div>
         <div class="mc-chart-canvas"><canvas id="mcDistChart"></canvas></div>
       </div>
       <div class="section"><div class="section-title">収入内訳</div><table class="detail-table"><thead><tr><th>項目</th><th>詳細</th><th style="text-align:right">換算(連)</th></tr></thead><tbody id="detailBody-mc"></tbody></table></div>
@@ -990,7 +990,8 @@ function runMonteCarlo() {
         conRates, targetReachRate, weapReachRate, setReachRate,
         meanChar, p50Char, charPulls, weapPulls,
         lineXLabels, lineCharRates, lineWeapRates, lineSetRates,
-        finalConBuckets: fbRaw, charSampleLength
+        finalConBuckets: fbRaw, charSampleLength,
+        weapRefineBuckets: wbRaw, weapSampleLength
       } = data;
 
       // setBanner
@@ -1072,24 +1073,44 @@ function runMonteCarlo() {
         }
       });
 
-      // distChart（WorkerからはMapではなくオブジェクトで受け取る）
-      // X軸は常に未所持〜C6まで固定表示
-      const fixedFcKeys = [-1, 0, 1, 2, 3, 4, 5, 6];
-      const histLabels  = fixedFcKeys.map(fc => fc === -1 ? '未所持' : `C${fc}`);
-      const histPcts    = fixedFcKeys.map(fc => fbRaw[fc] ? parseFloat(((fbRaw[fc] / charSampleLength) * 100).toFixed(1)) : 0);
-      const histColors  = fixedFcKeys.map(fc => fc === targetCon ? 'rgba(227,179,65,0.85)' : 'rgba(63,185,80,0.6)');
-      const histCounts  = fixedFcKeys.map(fc => fbRaw[fc] || 0);
-      if (distChart) distChart.destroy();
-      const distCtx = document.getElementById('mcDistChart').getContext('2d');
-      distChart = new Chart(distCtx, {
-        type: 'bar',
-        data: { labels:histLabels, datasets:[{ label:'割合', data:histPcts, backgroundColor:histColors, borderRadius:4, borderSkipped:false }] },
-        options: {
-          responsive:true, maintainAspectRatio:false,
-          scales: { y:{ ticks:{ color:'#8b949e', callback:v=>v+'%' }, grid:{ color:'rgba(48,54,61,0.6)' } }, x:{ ticks:{ color:'#8b949e' }, grid:{ display:false } } },
-          plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>` ${ctx.raw}% (${histCounts[ctx.dataIndex].toLocaleString()}回)` } } }
+      // グラフ切り替え：両方あり→lineChart、それ以外→分布グラフ
+      const hasBoth = targetRef > 0 && charPulls > 0 && weapPulls > 0;
+      $('lineChartWrap').style.display = hasBoth ? '' : 'none';
+      $('distChartWrap').style.display = hasBoth ? 'none' : '';
+
+      if (!hasBoth) {
+        if (distChart) distChart.destroy();
+        const distCtx = document.getElementById('mcDistChart').getContext('2d');
+        let histLabels, histPcts, histColors, histCounts;
+
+        if (targetRef === 0) {
+          // キャラのみ：キャラ取得数分布
+          $('distChartTitle').textContent = 'キャラ取得数の分布（試行結果）';
+          const fixedFcKeys = [-1, 0, 1, 2, 3, 4, 5, 6];
+          histLabels = fixedFcKeys.map(fc => fc === -1 ? '未所持' : `C${fc}`);
+          histPcts   = fixedFcKeys.map(fc => fbRaw[fc] ? parseFloat(((fbRaw[fc] / charSampleLength) * 100).toFixed(1)) : 0);
+          histColors = fixedFcKeys.map(fc => fc === targetCon ? 'rgba(227,179,65,0.85)' : 'rgba(63,185,80,0.6)');
+          histCounts = fixedFcKeys.map(fc => fbRaw[fc] || 0);
+        } else {
+          // 武器のみ：武器精錬数分布
+          $('distChartTitle').textContent = '武器精錬数の分布（試行結果）';
+          const fixedRefKeys = [0, 1, 2, 3, 4, 5];
+          histLabels = fixedRefKeys.map(r => r === 0 ? 'R0' : `R${r}`);
+          histPcts   = fixedRefKeys.map(r => wbRaw && wbRaw[r] ? parseFloat(((wbRaw[r] / weapSampleLength) * 100).toFixed(1)) : 0);
+          histColors = fixedRefKeys.map(r => r === targetRef ? 'rgba(227,179,65,0.85)' : 'rgba(63,185,80,0.6)');
+          histCounts = fixedRefKeys.map(r => wbRaw && wbRaw[r] ? wbRaw[r] : 0);
         }
-      });
+
+        distChart = new Chart(distCtx, {
+          type: 'bar',
+          data: { labels:histLabels, datasets:[{ label:'割合', data:histPcts, backgroundColor:histColors, borderRadius:4, borderSkipped:false }] },
+          options: {
+            responsive:true, maintainAspectRatio:false,
+            scales: { y:{ ticks:{ color:'#8b949e', callback:v=>v+'%' }, grid:{ color:'rgba(48,54,61,0.6)' } }, x:{ ticks:{ color:'#8b949e' }, grid:{ display:false } } },
+            plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>` ${ctx.raw}% (${histCounts[ctx.dataIndex].toLocaleString()}回)` } } }
+          }
+        });
+      }
 
       document.getElementById('detailBody-mc').innerHTML = detailHTML(income);
       progressWrap.style.display = 'none';
