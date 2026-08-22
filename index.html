@@ -469,10 +469,18 @@ document.getElementById('startDate').valueAsDate = new Date();
 
 function updatePatchSchedule() {
   const BASE_VER = new Date('2026-07-01');
+  // 7.0〜7.8のバージョンラベルテーブル（7.0 = 2026/8/12）
+  const VER_LABEL_BASE = new Date('2026-08-12');
+  const VER_LABELS = {};
+  for (let i = 0; i <= 8; i++) {
+    const d = new Date(VER_LABEL_BASE);
+    d.setDate(d.getDate() + i * 42);
+    VER_LABELS[d.toISOString().slice(0, 10)] = `7.${i}`;
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // 今日以降の最初のパッチ日を基準に3回分取得
   const patches = [];
   for (let d = new Date(BASE_VER); patches.length < 3; d.setDate(d.getDate() + 42)) {
     const patch = new Date(d);
@@ -492,7 +500,9 @@ function updatePatchSchedule() {
   for (let i = 0; i < Math.min(patches.length, 3); i++) {
     const patch = patches[i];
     const mid   = new Date(patch); mid.setDate(mid.getDate() + 20);
-    html += `<span style="color:var(--accent2)">🔴 アプデ ${fmt(patch)}</span>　<span style="color:var(--gold)">🔵 前半後半変更 ${fmt(mid)}</span>`;
+    const verLabel = VER_LABELS[patch.toISOString().slice(0, 10)];
+    const verTag   = verLabel ? `<span style="color:var(--muted);font-size:0.9em;margin-right:4px;">[Ver${verLabel}]</span>` : '';
+    html += `${verTag}<span style="color:var(--accent2)">🔴 アプデ ${fmt(patch)}</span>　<span style="color:var(--gold)">🔵 前半後半変更 ${fmt(mid)}</span>`;
     if (i < 2) html += '<br>';
   }
   document.getElementById('patchSchedule').innerHTML = html;
