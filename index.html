@@ -336,7 +336,7 @@
           <div class="guarantee-btn-goal" id="goal-fate-1" onclick="setGoalFate(1)">命定値 1<br><span style="font-size:0.85em;font-weight:400;color:var(--muted)">確定で武器</span></div>
         </div>
       </div>
-      <div class="pity-hint">⚡ 仮天井考慮：キャラ74連〜、武器63連〜以降の確率上昇を加味した<b>期待連数</b>で計算。<br>武器バナーは37.5/62.5システム（命定値）に基づき期待連数を算出。</div>
+      <div class="pity-hint">※仮天井考慮：キャラ74連〜、武器63連〜以降の確率上昇を加味した<b>期待連数</b>で計算。<br>※命定値1の状態でガチャ更新があり、命定値はリセットされたが、次の★5がピックアップ確定の場合は「命定値0」を選択してください（やや過小評価になります）</div>
     </div>
     <button class="calc-btn" id="calcBtn-goal" onclick="calcReverse()">必要原石を逆算 →</button>
     <div class="result-block" id="result-goal" style="display:none;">
@@ -424,6 +424,7 @@
           </div>
         </div>
       </div>
+      <div class="pity-hint">※仮天井考慮：キャラ74連〜、武器63連〜以降の確率上昇を加味した確率で計算。<br>※命定値1の状態でガチャ更新があり、命定値はリセットされたが、次の★5がピックアップ確定の場合は「命定値0」を選択してください（やや過小評価になります）</div>
     </div>
 
     <div class="section">
@@ -535,10 +536,7 @@ function switchMode(mode) {
   document.querySelector('.tab-' + mode).classList.add('active');
   document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('visible'));
   document.getElementById('panel-' + mode).classList.add('visible');
-  // 逆算タブでは期間・課金を非表示
-  const hide = mode === 'goal';
-  $('section-period').style.display  = hide ? 'none' : '';
-  $('section-billing').style.display = hide ? 'none' : '';
+
   if (mode === 'sim') syncSimWishes();
   if (mode === 'mc')  syncMcWishes();
 }
@@ -785,8 +783,9 @@ function calcReverse() {
   const totalNeeded = charNeeded + weapNeeded;
   const neededPrimo = Math.ceil(totalNeeded) * 160;
 
-  // 手持ち連数（invTotalから取得）
-  const heldWishes = parseFloat($('invTotal').textContent) || 0;
+  // 手持ち＋期間収入
+  const income = calcIncome();
+  const heldWishes = income ? income.finalTotal : (parseFloat($('invTotal').textContent) || 0);
   const diff = heldWishes - totalNeeded;
   const diffPrimo = Math.round(Math.abs(diff) * 160);
 
