@@ -651,9 +651,9 @@ function calcIncome() {
   const stoneTotal   = dailyBase + blessStone + spiralStone + theaterStone + verStone;
   const incomeWishes = (stoneTotal / 160) + shopW + bpW;
   const rawTotal      = incomeWishes + currentWishes;
-  // スターライト還元：トータル連数の10%
-  const starglitterBonus = rawTotal * 0.10;
-  const subtotal       = rawTotal + starglitterBonus;
+  // スターライト還元：総連数の10/9倍（引いた連数の1/9が還元される仕様）
+  const subtotal        = rawTotal * (10 / 9);
+  const starglitterBonus = subtotal - rawTotal;
   // 小数部分を切り上げ（端数は還元欄に含める）
   const finalTotal      = Math.ceil(subtotal);
   const cashback        = starglitterBonus + (finalTotal - subtotal);
